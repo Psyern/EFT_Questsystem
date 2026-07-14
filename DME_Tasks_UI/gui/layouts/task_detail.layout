@@ -1,0 +1,1070 @@
+FrameWidgetClass dme_tasks_detail_root {
+ visible 1
+ position 0 0
+ size 1 1
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 0
+ {
+  PanelWidgetClass detail_background {
+   visible 1
+   ignorepointer 1
+   color 0.0314 0.0353 0.0471 0.9608
+   position 0 0
+   size 1 1
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style DayZDefaultPanel
+   "no focus" 1
+  }
+  ButtonWidgetClass detail_back_button {
+   visible 1
+   color 0.1294 0.1412 0.1686 1
+   position 8 8
+   size 140 30
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "< ZURUECK"
+   font "gui/fonts/metronbook16"
+  }
+  TextWidgetClass detail_title_text {
+   visible 1
+   ignorepointer 1
+   color 0.9216 0.9216 0.9216 1
+   position 0.13 8
+   size 0.55 30
+   hexactpos 0
+   vexactpos 1
+   hexactsize 0
+   vexactsize 1
+   text ""
+   font "gui/fonts/metronbook22"
+   "exact text" 1
+   "exact text size" 20
+   "text valign" center
+  }
+  PanelWidgetClass detail_state_panel {
+   visible 1
+   ignorepointer 1
+   color 0.3529 0.3529 0.3922 1
+   position 8 8
+   size 160 30
+   halign right_ref
+   hexactpos 1
+   vexactpos 1
+   hexactsize 1
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass detail_state_text {
+     visible 1
+     ignorepointer 1
+     color 0.9412 0.9412 0.9412 1
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 12
+     "text halign" center
+     "text valign" center
+    }
+   }
+  }
+  TextWidgetClass detail_category_text {
+   visible 1
+   ignorepointer 1
+   color 0.5882 0.5882 0.6275 1
+   position 0.13 0.075
+   size 0.55 20
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+  }
+  TextWidgetClass detail_briefing_label {
+   visible 1
+   ignorepointer 1
+   color 0.5098 0.5098 0.549 1
+   position 0.01 0.13
+   size 0.56 18
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text "BRIEFING"
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+  }
+  RichTextWidgetClass detail_briefing_text {
+   visible 1
+   ignorepointer 1
+   color 0.8235 0.8235 0.8235 1
+   position 0.01 0.17
+   size 0.56 0.24
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 14
+  }
+  TextWidgetClass detail_objectives_label {
+   visible 1
+   ignorepointer 1
+   color 0.5098 0.5098 0.549 1
+   position 0.01 0.43
+   size 0.56 18
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text "ZIELE"
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+  }
+  PanelWidgetClass objective_row_0 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.47
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_0 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_0 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_0 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_0 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_0 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass objective_row_1 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.5325
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_1 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_1 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_1 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_1 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_1 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass objective_row_2 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.595
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_2 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_2 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_2 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_2 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_2 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass objective_row_3 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.6575
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_3 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_3 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_3 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_3 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_3 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass objective_row_4 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.72
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_4 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_4 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_4 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_4 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_4 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass objective_row_5 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.7825
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_5 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_5 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_5 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_5 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_5 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass objective_row_6 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.845
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_6 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_6 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_6 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_6 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_6 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass objective_row_7 {
+   visible 0
+   ignorepointer 1
+   color 0.051 0.0588 0.0745 0.7843
+   position 0.01 0.9075
+   size 0.56 40
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass objective_check_7 {
+     visible 1
+     ignorepointer 1
+     color 0.6275 0.6275 0.6667 1
+     position 0 0
+     size 26 1
+     hexactpos 1
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 16
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass objective_text_7 {
+     visible 1
+     ignorepointer 1
+     color 0.8627 0.8627 0.8627 1
+     position 30 2
+     size 0.72 22
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    TextWidgetClass objective_count_7 {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 4 2
+     size 90 22
+     halign right_ref
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+     "text halign" right
+    }
+    PanelWidgetClass objective_bar_bg_7 {
+     visible 1
+     ignorepointer 1
+     color 0.1176 0.1294 0.1569 1
+     position 30 28
+     size 0.6 6
+     hexactpos 1
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass objective_bar_fill_7 {
+       visible 1
+       ignorepointer 1
+       color 0.7255 0.5804 0.1961 1
+       position 0 0
+       size 0 1
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style DayZDefaultPanel
+       "no focus" 1
+      }
+     }
+    }
+   }
+  }
+  TextWidgetClass detail_rewards_label {
+   visible 1
+   ignorepointer 1
+   color 0.5098 0.5098 0.549 1
+   position 0.6 0.13
+   size 0.39 18
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text "BELOHNUNGEN"
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+  }
+  RichTextWidgetClass detail_rewards_text {
+   visible 1
+   ignorepointer 1
+   color 0.8235 0.8235 0.8235 1
+   position 0.6 0.17
+   size 0.39 0.29
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 14
+  }
+  TextWidgetClass detail_penalties_label {
+   visible 1
+   ignorepointer 1
+   color 0.5098 0.5098 0.549 1
+   position 0.6 0.48
+   size 0.39 18
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text "STRAFEN BEI FEHLSCHLAG"
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+  }
+  RichTextWidgetClass detail_penalties_text {
+   visible 1
+   ignorepointer 1
+   color 0.8039 0.5882 0.4314 1
+   position 0.6 0.52
+   size 0.39 0.12
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+  }
+  TextWidgetClass detail_lock_text {
+   visible 0
+   ignorepointer 1
+   color 0.8039 0.6471 0.3137 1
+   position 0.6 0.655
+   size 0.39 22
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+  }
+  ButtonWidgetClass detail_accept_button {
+   visible 0
+   color 0.1804 0.3216 0.4196 1
+   position 0.6 0.72
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "ANNEHMEN"
+   font "gui/fonts/metronbook16"
+  }
+  ButtonWidgetClass detail_turnin_button {
+   visible 0
+   color 0.1804 0.3216 0.4196 1
+   position 0.802 0.72
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "ABSCHLUSS MELDEN"
+   font "gui/fonts/metronbook16"
+  }
+  ButtonWidgetClass detail_claim_button {
+   visible 0
+   color 0.2353 0.4196 0.2353 1
+   position 0.6 0.79
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "BELOHNUNG ABHOLEN"
+   font "gui/fonts/metronbook16"
+  }
+  ButtonWidgetClass detail_choice_button {
+   visible 0
+   color 0.4196 0.3373 0.1804 1
+   position 0.802 0.79
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "ENTSCHEIDUNG ..."
+   font "gui/fonts/metronbook16"
+  }
+  ButtonWidgetClass detail_handover_button {
+   visible 0
+   color 0.1804 0.3216 0.4196 1
+   position 0.6 0.86
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "ITEMS ABGEBEN ..."
+   font "gui/fonts/metronbook16"
+  }
+  ButtonWidgetClass detail_track_button {
+   visible 0
+   color 0.1294 0.1412 0.1686 1
+   position 0.802 0.86
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "VERFOLGEN"
+   font "gui/fonts/metronbook16"
+  }
+  ButtonWidgetClass detail_abandon_button {
+   visible 0
+   color 0.3608 0.1294 0.1294 1
+   position 0.6 0.93
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "AUFGABE ABBRECHEN"
+   font "gui/fonts/metronbook16"
+  }
+  ButtonWidgetClass detail_replace_button {
+   visible 0
+   color 0.3608 0.2431 0.1294 1
+   position 0.802 0.93
+   size 0.19 32
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style Editor
+   "no focus" 1
+   text "AUFGABE ERSETZEN ..."
+   font "gui/fonts/metronbook16"
+  }
+ }
+}

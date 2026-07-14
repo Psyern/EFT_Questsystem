@@ -1,0 +1,108 @@
+PanelWidgetClass dme_tasks_replace_root {
+ visible 0
+ priority 100
+ color 0.0078 0.0078 0.0118 0.7843
+ position 0 0
+ size 1 1
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 0
+ style DayZDefaultPanel
+ "no focus" 1
+ {
+  PanelWidgetClass replace_dialog_panel {
+   visible 1
+   color 0.0549 0.0627 0.0784 1
+   position 0 0
+   size 560 300
+   halign center_ref
+   valign center_ref
+   hexactpos 0
+   vexactpos 0
+   hexactsize 1
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass replace_title_text {
+     visible 1
+     ignorepointer 1
+     color 0.9216 0.9216 0.9216 1
+     position 0 14
+     size 1 30
+     hexactpos 0
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text "OPERATIVE AUFGABE ERSETZEN?"
+     font "gui/fonts/metronbook22"
+     "exact text" 1
+     "exact text size" 20
+     "text halign" center
+     "text valign" center
+    }
+    TextWidgetClass replace_quest_text {
+     visible 1
+     ignorepointer 1
+     color 0.5882 0.5882 0.6275 1
+     position 0 50
+     size 1 22
+     hexactpos 0
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 14
+     "text halign" center
+     "text valign" center
+    }
+    RichTextWidgetClass replace_info_text {
+     visible 1
+     ignorepointer 1
+     color 0.7059 0.7059 0.7451 1
+     position 20 88
+     size 520 120
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     text "Diese Aufgabe wird verworfen und durch eine neue operative Aufgabe ersetzt.<br/>Dafuer wird eine Gebuehr faellig (Hoehe laut Server-Konfiguration).<br/><br/>Fortfahren?"
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 13
+    }
+    ButtonWidgetClass replace_confirm_button {
+     visible 1
+     color 0.3608 0.2431 0.1294 1
+     position 20 240
+     size 250 34
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     style Editor
+     "no focus" 1
+     text "ERSETZEN"
+     font "gui/fonts/metronbook16"
+    }
+    ButtonWidgetClass replace_cancel_button {
+     visible 1
+     color 0.3608 0.1294 0.1294 1
+     position 290 240
+     size 250 34
+     hexactpos 1
+     vexactpos 1
+     hexactsize 1
+     vexactsize 1
+     style Editor
+     "no focus" 1
+     text "ABBRECHEN"
+     font "gui/fonts/metronbook16"
+    }
+   }
+  }
+ }
+}

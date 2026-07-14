@@ -1,0 +1,27 @@
+{
+	"Version": 1,
+	"TemplateId": "weekly_boss",
+	"TraderId": "west_quartermaster",
+	"ObjectiveType": "BOSS",
+	"TargetTypes": ["ZmbM_PatrolNormal_Base"],
+	"MinimumAmount": 1,
+	"MaximumAmount": 3,
+	"AllowedZones": ["ANY"],
+	"RewardTier": 5,
+	"TimeLimit": 604800,
+	"Rewards": {
+		"PlayerExperience": 6000,
+		"Currency": 30000,
+		"TraderReputation": 0.05,
+		"RivalReputation": [],
+		"Items": [
+			{
+				"ClassName": "Ammo_545x39",
+				"Amount": 2,
+				"Attachments": []
+			}
+		],
+		"SkillPoints": 0,
+		"SeasonXp": 0
+	}
+}

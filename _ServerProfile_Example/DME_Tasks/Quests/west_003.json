@@ -1,0 +1,30 @@
+{
+	"Version": 1,
+	"QuestId": "west_003",
+	"TraderId": "west_quartermaster",
+	"Category": "STORY",
+	"Title": "Munition beschaffen",
+	"Description": "Unsere Bestaende sind leer. Finde drei Munitionskisten (5,45x39) draussen in der Welt. Gekaufte, gecraftete oder als Belohnung erhaltene Kisten akzeptiere ich nicht.",
+	"Repeatable": false,
+	"FailOnDeath": false,
+	"FailOnFactionChange": false,
+	"TimeLimit": -1,
+	"Prerequisites": {
+		"RequiredCompletedQuests": ["west_002"]
+	},
+	"Objectives": [
+		{
+			"ObjectiveId": "collect_ammoboxes",
+			"Type": "COLLECT",
+			"Amount": 3,
+			"ClassNames": ["AmmoBox_545x39_20Rnd", "AmmoBox_545x39Tracer_20Rnd"],
+			"FoundInWorldRequired": true,
+			"AllowedOrigins": ["WORLD_LOOT", "INFECTED_DROP", "AI_DROP", "BOSS_DROP"]
+		}
+	],
+	"Rewards": {
+		"PlayerExperience": 3000,
+		"Currency": 10000,
+		"TraderReputation": 0.03
+	}
+}

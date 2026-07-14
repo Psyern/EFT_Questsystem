@@ -1,0 +1,17 @@
+{
+	"Version": 1,
+	"FlushIntervalSeconds": 30.0,
+	"BackupSlots": 3,
+	"DailyReplaceCost": 5000,
+	"DailyQuestCount": 3,
+	"WeeklyQuestCount": 2,
+	"EnableExpeditions": true,
+	"EnableDailyWeekly": true,
+	"EnableIntegrationMarket": false,
+	"EnableIntegrationAI": false,
+	"EnableIntegrationGroups": false,
+	"EnableIntegrationBoss": false,
+	"EnableIntegrationTerje": false,
+	"EnableIntegrationSeason": false,
+	"EnableIntegrationWebsite": false
+}

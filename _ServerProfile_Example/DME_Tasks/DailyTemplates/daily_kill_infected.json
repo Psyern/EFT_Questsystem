@@ -1,0 +1,12 @@
+{
+	"Version": 1,
+	"TemplateId": "daily_kill_infected",
+	"TraderId": "west_quartermaster",
+	"ObjectiveType": "KILL",
+	"TargetTypes": ["INFECTED"],
+	"MinimumAmount": 10,
+	"MaximumAmount": 40,
+	"AllowedZones": ["ANY", "MILITARY", "CITY"],
+	"RewardTier": 2,
+	"TimeLimit": 86400
+}

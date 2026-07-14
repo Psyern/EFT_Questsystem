@@ -1,0 +1,477 @@
+FrameWidgetClass dme_tasks_menu_root {
+ visible 1
+ ignorepointer 1
+ position 0 0
+ size 1 1
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 0
+ {
+  PanelWidgetClass menu_background {
+   visible 1
+   color 0.0157 0.0196 0.0235 0.9608
+   position 0 0
+   size 1 1
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style DayZDefaultPanel
+   "no focus" 1
+  }
+  PanelWidgetClass tab_bar_panel {
+   visible 1
+   color 0.051 0.0549 0.0706 1
+   position 0 0
+   size 1 0.05
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    ButtonWidgetClass tab_buy_button {
+     color 0.1294 0.1412 0.1686 1
+     position 0.005 0
+     size 0.11 30
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 1
+     style Editor
+     "no focus" 1
+     text "KAUFEN"
+     font "gui/fonts/metronbook16"
+    }
+    ButtonWidgetClass tab_sell_button {
+     color 0.1294 0.1412 0.1686 1
+     position 0.12 0
+     size 0.11 30
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 1
+     style Editor
+     "no focus" 1
+     text "VERKAUFEN"
+     font "gui/fonts/metronbook16"
+    }
+    ButtonWidgetClass tab_tasks_button {
+     color 0.1804 0.3216 0.4196 1
+     position 0.235 0
+     size 0.11 30
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 1
+     style Editor
+     "no focus" 1
+     text "AUFGABEN"
+     font "gui/fonts/metronbook16"
+    }
+    ButtonWidgetClass tab_services_button {
+     color 0.1294 0.1412 0.1686 1
+     position 0.35 0
+     size 0.11 30
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 1
+     style Editor
+     "no focus" 1
+     text "DIENSTE"
+     font "gui/fonts/metronbook16"
+    }
+    ButtonWidgetClass close_button {
+     color 0.3608 0.1294 0.1294 1
+     position 0.005 0
+     size 40 30
+     halign right_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 1
+     vexactsize 1
+     style Editor
+     "no focus" 1
+     text "X"
+     font "gui/fonts/metronbook16"
+    }
+   }
+  }
+  PanelWidgetClass header_panel {
+   visible 1
+   color 0.0392 0.0431 0.0549 1
+   position 0 0.05
+   size 1 0.13
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style DayZDefaultPanel
+   "no focus" 1
+  }
+  PanelWidgetClass trader_bar_panel {
+   visible 1
+   color 0.0314 0.0353 0.0471 1
+   position 0 0.18
+   size 1 0.05
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    WrapSpacerWidgetClass trader_bar_content {
+     visible 1
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     content_valign center
+     {
+      ButtonWidgetClass trader_slot_0 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_1 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_2 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_3 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_4 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_5 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_6 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_7 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_8 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass trader_slot_9 {
+       visible 0
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 30
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text ""
+       font "gui/fonts/metronbook16"
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass filter_bar_panel {
+   visible 1
+   color 0.0275 0.0314 0.0431 1
+   position 0 0.23
+   size 1 0.05
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    WrapSpacerWidgetClass filter_bar_content {
+     visible 1
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     content_valign center
+     {
+      ButtonWidgetClass filter_all_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "ALLE"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_story_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "STORY"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_side_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "NEBEN"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_faction_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "FRAKTION"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_boss_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "BOSS"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_expedition_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "EXPEDITION"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_daily_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "TAEGLICH"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_weekly_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "WOECHENTLICH"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_completed_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "ABGESCHLOSSEN"
+       font "gui/fonts/metronbook16"
+      }
+      ButtonWidgetClass filter_failed_button {
+       color 0.1294 0.1412 0.1686 1
+       size 0.098 28
+       hexactsize 0
+       vexactsize 1
+       style Editor
+       "no focus" 1
+       text "FEHLGESCHLAGEN"
+       font "gui/fonts/metronbook16"
+      }
+     }
+    }
+   }
+  }
+  PanelWidgetClass content_panel {
+   visible 1
+   color 0.0235 0.0275 0.0353 0.9412
+   position 0 0.28
+   size 1 0.72
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    PanelWidgetClass task_list_panel {
+     visible 1
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     "no focus" 1
+     {
+      ScrollWidgetClass task_list_scroll {
+       visible 1
+       clipchildren 1
+       position 0.003 0.008
+       size 0.994 0.984
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       style blank
+       "Scrollbar V" 1
+       {
+        WrapSpacerWidgetClass task_list_content {
+         visible 1
+         position 0 0
+         size 1 0.5
+         hexactpos 0
+         vexactpos 0
+         hexactsize 0
+         vexactsize 0
+         "Size To Content V" 1
+        }
+       }
+      }
+     }
+    }
+    PanelWidgetClass task_detail_panel {
+     visible 0
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     "no focus" 1
+    }
+    PanelWidgetClass sync_overlay_panel {
+     visible 1
+     priority 50
+     color 0.0118 0.0118 0.0157 0.902
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      TextWidgetClass sync_overlay_text {
+       visible 1
+       ignorepointer 1
+       color 0.851 0.851 0.851 1
+       position 0 0
+       size 0.5 40
+       halign center_ref
+       valign center_ref
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 1
+       text "SYNCHRONISIERE ..."
+       font "gui/fonts/metronbook22"
+       "exact text" 1
+       "exact text size" 22
+       "text halign" center
+       "text valign" center
+      }
+     }
+    }
+   }
+  }
+ }
+}

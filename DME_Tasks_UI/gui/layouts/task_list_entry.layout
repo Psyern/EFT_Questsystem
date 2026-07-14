@@ -1,0 +1,98 @@
+ButtonWidgetClass task_entry_root {
+ visible 1
+ color 0.0863 0.0941 0.1176 1
+ position 0 0
+ size 1 48
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 1
+ style Editor
+ "no focus" 1
+ text ""
+ font "gui/fonts/metronbook16"
+ {
+  PanelWidgetClass entry_state_panel {
+   visible 1
+   ignorepointer 1
+   color 0.3529 0.3529 0.3922 1
+   position 8 0
+   size 130 26
+   valign center_ref
+   hexactpos 1
+   vexactpos 0
+   hexactsize 1
+   vexactsize 1
+   style DayZDefaultPanel
+   "no focus" 1
+   {
+    TextWidgetClass entry_state_text {
+     visible 1
+     ignorepointer 1
+     color 0.9412 0.9412 0.9412 1
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     text ""
+     font "gui/fonts/metronbook16"
+     "exact text" 1
+     "exact text size" 12
+     "text halign" center
+     "text valign" center
+    }
+   }
+  }
+  TextWidgetClass entry_title_text {
+   visible 1
+   ignorepointer 1
+   color 0.9216 0.9216 0.9216 1
+   position 0.145 0
+   size 0.4 48
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 16
+   "text valign" center
+  }
+  TextWidgetClass entry_info_text {
+   visible 1
+   ignorepointer 1
+   color 0.5882 0.5882 0.6275 1
+   position 0.555 0
+   size 0.25 48
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+   "text valign" center
+  }
+  TextWidgetClass entry_progress_text {
+   visible 1
+   ignorepointer 1
+   color 0.7059 0.7059 0.7451 1
+   position 0.815 0
+   size 0.175 48
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   text ""
+   font "gui/fonts/metronbook16"
+   "exact text" 1
+   "exact text size" 13
+   "text halign" right
+   "text valign" center
+  }
+ }
+}

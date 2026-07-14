@@ -1,0 +1,37 @@
+{
+	"Version": 1,
+	"QuestId": "west_004",
+	"TraderId": "west_quartermaster",
+	"Category": "STORY",
+	"Title": "Munition abliefern",
+	"Description": "Bring mir die drei Munitionskisten. Teilabgaben nehme ich an — komm einfach wieder, sobald du den Rest hast. Kisten aus deinem Fund zaehlen sofort beim Annehmen des Auftrags.",
+	"Repeatable": false,
+	"FailOnDeath": false,
+	"FailOnFactionChange": false,
+	"TimeLimit": -1,
+	"Prerequisites": {
+		"RequiredCompletedQuests": ["west_003"]
+	},
+	"Objectives": [
+		{
+			"ObjectiveId": "collect_ammoboxes",
+			"Type": "COLLECT",
+			"Amount": 3,
+			"ClassNames": ["AmmoBox_545x39_20Rnd", "AmmoBox_545x39Tracer_20Rnd"],
+			"FoundInWorldRequired": true,
+			"AllowedOrigins": ["WORLD_LOOT", "INFECTED_DROP", "AI_DROP", "BOSS_DROP"]
+		},
+		{
+			"ObjectiveId": "handover_ammoboxes",
+			"Type": "HANDOVER",
+			"Amount": 3,
+			"ReferencesObjective": "collect_ammoboxes",
+			"AllowPartialHandover": true
+		}
+	],
+	"Rewards": {
+		"PlayerExperience": 3500,
+		"Currency": 12000,
+		"TraderReputation": 0.03
+	}
+}

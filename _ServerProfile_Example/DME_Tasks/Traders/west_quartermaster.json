@@ -1,0 +1,26 @@
+{
+	"Version": 1,
+	"TraderId": "west_quartermaster",
+	"DisplayName": "Quartiermeister Rask",
+	"Faction": "WEST",
+	"LoyaltyLevels": [
+		{
+			"Level": 1,
+			"RequiredPlayerLevel": 0,
+			"RequiredReputation": 0.0,
+			"RequiredTurnover": 0
+		},
+		{
+			"Level": 2,
+			"RequiredPlayerLevel": 10,
+			"RequiredReputation": 0.2,
+			"RequiredTurnover": 250000
+		},
+		{
+			"Level": 3,
+			"RequiredPlayerLevel": 20,
+			"RequiredReputation": 0.45,
+			"RequiredTurnover": 1000000
+		}
+	]
+}

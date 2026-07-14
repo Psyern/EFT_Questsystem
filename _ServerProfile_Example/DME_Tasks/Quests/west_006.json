@@ -1,0 +1,40 @@
+{
+	"Version": 1,
+	"QuestId": "west_006",
+	"TraderId": "west_quartermaster",
+	"Category": "STORY",
+	"Title": "Ruestungsvertrag",
+	"Description": "Du hast dich bewaehrt. Melde dich lebend bei mir, dann bekommst du eine AK-74 aus meinem Bestand — und ab sofort fuehre ich sie auch im Sortiment fuer dich.",
+	"Repeatable": false,
+	"FailOnDeath": false,
+	"FailOnFactionChange": false,
+	"TimeLimit": -1,
+	"Prerequisites": {
+		"MinimumTraderReputation": 0.08,
+		"RequiredCompletedQuests": ["west_005"]
+	},
+	"Objectives": [
+		{
+			"ObjectiveId": "report_back",
+			"Type": "RETURN_TO_TRADER",
+			"Amount": 1,
+			"TraderId": "west_quartermaster",
+			"MustBeAlive": true
+		}
+	],
+	"Rewards": {
+		"PlayerExperience": 8500,
+		"Currency": 45000,
+		"TraderReputation": 0.05,
+		"Items": [
+			{
+				"ClassName": "AK74",
+				"Amount": 1,
+				"Attachments": ["AK74_WoodBttstck", "AK74_Hndgrd", "Mag_AK74_30Rnd"]
+			}
+		]
+	},
+	"Unlocks": {
+		"MarketItems": ["AK74"]
+	}
+}

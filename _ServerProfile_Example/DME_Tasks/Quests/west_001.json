@@ -1,0 +1,32 @@
+{
+	"Version": 1,
+	"QuestId": "west_001",
+	"TraderId": "west_quartermaster",
+	"Category": "STORY",
+	"Title": "Vorposten aufklaeren",
+	"Description": "Rask braucht Augen im Westen: Finde das verlassene Militaerlager in den Bergen bei Myshkino und sieh dich dort um. (Zonen-Koordinaten sind Chernarus-Beispielwerte fuer das Myshkino-Militaerlager, ca. X 2035 / Z 7295 — vor Livegang an die eigene Karte anpassen.)",
+	"Repeatable": false,
+	"FailOnDeath": false,
+	"FailOnFactionChange": false,
+	"TimeLimit": -1,
+	"Objectives": [
+		{
+			"ObjectiveId": "discover_camp",
+			"Type": "DISCOVER",
+			"Amount": 1,
+			"Zone": {
+				"ZoneId": "mil_camp_west",
+				"CenterX": 2035.0,
+				"CenterY": 290.0,
+				"CenterZ": 7295.0,
+				"Radius": 150.0,
+				"Height": 120.0
+			}
+		}
+	],
+	"Rewards": {
+		"PlayerExperience": 1500,
+		"Currency": 5000,
+		"TraderReputation": 0.02
+	}
+}

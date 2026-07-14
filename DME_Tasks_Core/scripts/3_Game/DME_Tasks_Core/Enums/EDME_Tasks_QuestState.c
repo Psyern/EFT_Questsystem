@@ -1,0 +1,12 @@
+enum EDME_Tasks_QuestState
+{
+	LOCKED = 0,
+	AVAILABLE = 1,
+	ACTIVE = 2,
+	READY_TO_TURN_IN = 3,
+	COMPLETED = 4,
+	FAILED = 5,
+	EXPIRED = 6,
+	ABANDONED = 7,
+	COOLDOWN = 8
+}

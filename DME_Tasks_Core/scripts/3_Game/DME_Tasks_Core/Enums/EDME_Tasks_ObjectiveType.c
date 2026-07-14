@@ -1,0 +1,22 @@
+enum EDME_Tasks_ObjectiveType
+{
+	KILL = 0,
+	COLLECT = 1,
+	HANDOVER = 2,
+	TRAVEL = 3,
+	DISCOVER = 4,
+	MARK = 5,
+	STASH = 6,
+	INTERACT = 7,
+	SURVIVE = 8,
+	RETURN_TO_TRADER = 9,
+	CRAFT = 10,
+	ESCORT = 11,
+	DEFEND = 12,
+	DELIVER = 13,
+	USE_ITEM = 14,
+	SIGNAL = 15,
+	GROUP = 16,
+	BOSS = 17,
+	EXTRACT = 18
+}
