@@ -94,16 +94,18 @@ class DME_Tasks_RPC {
 		GetRPCManager().SendRPC(DME_Tasks_Const.MOD_NAME, "RPC_RewardGranted", data, true, identity);
 	}
 
-	static void SendNotification(PlayerIdentity identity, string title, string message, int type) {
+	//! titleRaw/msgKey follow the '#' rule: leading '#' = stringtable key resolved on the client,
+	//! anything else is shown verbatim. p1/p2/p3 fill %1/%2/%3 in the resolved message.
+	static void SendNotification(PlayerIdentity identity, string titleRaw, string msgKey, string p1, string p2, string p3, int type) {
 		if (!g_Game || !g_Game.IsDedicatedServer()) {
 			return;
 		}
 		if (!identity) {
-			DME_Tasks_Log.Warn("SendNotification: identity null — RPC nicht gesendet");
+			DME_Tasks_Log.Warn("SendNotification: identity null — RPC not sent");
 			return;
 		}
 
-		Param3<string, string, int> data = new Param3<string, string, int>(title, message, type);
+		Param6<string, string, string, string, string, int> data = new Param6<string, string, string, string, string, int>(titleRaw, msgKey, p1, p2, p3, type);
 		GetRPCManager().SendRPC(DME_Tasks_Const.MOD_NAME, "RPC_Notification", data, true, identity);
 	}
 }

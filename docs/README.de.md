@@ -111,6 +111,8 @@ Integrations-Toggles wirken nur, wenn zusätzlich das `DME_Tasks_Integrations`-P
 
 Alle JSON-Keys entsprechen **exakt** den Model-Feldern (case-sensitiv). Enum-artige Felder sind **UPPERCASE-Strings**. Unbekannte Werte werden geloggt und ignoriert. Dateiname = `<TraderId>.json` bzw. `<QuestId>.json`.
 
+**Lokalisierung (`#`-Regel):** `Title`, `Description` und `DisplayName` werden 1:1 angezeigt — beginnt der Wert jedoch mit `#` (z. B. `"Title": "#STR_MYSERVER_Q002"`), wird er clientseitig über die Stringtable in der Sprache des Spielers aufgelöst. Der mitgelieferte MVP-Content nutzt Keys (`#STR_DME_TASKS_SEED_*`) als Vorlage; die EN/DE-Texte stehen in `DME_Tasks_Core\stringtable.csv`. Details: Wiki-Seite *Localization*.
+
 ### 4.1 Händler (`Traders\<TraderId>.json`)
 
 ```json

@@ -46,29 +46,29 @@ class DME_Tasks_ChoiceService {
 
 		DME_Tasks_QuestDef def = engine.GetQuestDef(questId);
 		if (!def) {
-			engine.NotifyPlayer(uid, "Entscheidung", "Unbekannte Quest", EDME_Tasks_NotificationType.WARNING);
+			engine.NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_CHOICE, DME_Tasks_LocKeys.NOTIF_UNKNOWN_QUEST, EDME_Tasks_NotificationType.WARNING);
 			return false;
 		}
 
 		DME_Tasks_ChoiceDef choice = FindChoice(def, choiceId);
 		if (!choice) {
-			engine.NotifyPlayer(uid, def.Title, "Unbekannte Entscheidung", EDME_Tasks_NotificationType.WARNING);
+			engine.NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_UNKNOWN_CHOICE, EDME_Tasks_NotificationType.WARNING);
 			return false;
 		}
 
 		DME_Tasks_ActiveQuest active = engine.GetActiveQuest(uid, questId);
 		if (!active) {
-			engine.NotifyPlayer(uid, def.Title, "Quest ist nicht aktiv", EDME_Tasks_NotificationType.WARNING);
+			engine.NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_NOT_ACTIVE, EDME_Tasks_NotificationType.WARNING);
 			return false;
 		}
 		if (active.State != EDME_Tasks_QuestState.ACTIVE && active.State != EDME_Tasks_QuestState.READY_TO_TURN_IN) {
-			engine.NotifyPlayer(uid, def.Title, "Entscheidung derzeit nicht moeglich", EDME_Tasks_NotificationType.WARNING);
+			engine.NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_CHOICE_UNAVAILABLE, EDME_Tasks_NotificationType.WARNING);
 			return false;
 		}
 
 		string existingChoiceId = GetChoiceIdFor(state, questId);
 		if (existingChoiceId != "") {
-			engine.NotifyPlayer(uid, def.Title, "Entscheidung wurde bereits getroffen", EDME_Tasks_NotificationType.WARNING);
+			engine.NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_CHOICE_ALREADY_MADE, EDME_Tasks_NotificationType.WARNING);
 			return false;
 		}
 
@@ -85,7 +85,7 @@ class DME_Tasks_ChoiceService {
 		if (label == "") {
 			label = choiceId;
 		}
-		engine.NotifyPlayer(uid, def.Title, "Entscheidung getroffen: " + label, EDME_Tasks_NotificationType.SUCCESS);
+		engine.NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_CHOICE_MADE, EDME_Tasks_NotificationType.SUCCESS, label);
 		DME_Tasks_Log.Info("Entscheidung %1 fuer Spieler %2 gespeichert", decision, uid);
 		return true;
 	}

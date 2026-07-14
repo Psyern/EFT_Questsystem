@@ -35,7 +35,7 @@ PanelWidgetClass dme_tasks_handover_root {
      vexactpos 1
      hexactsize 0
      vexactsize 1
-     text "ITEMS ABGEBEN?"
+     text "#STR_DME_TASKS_DLG_HANDOVER_TITLE"
      font "gui/fonts/metronbook22"
      "exact text" 1
      "exact text size" 20
@@ -69,7 +69,7 @@ PanelWidgetClass dme_tasks_handover_root {
      vexactpos 1
      hexactsize 1
      vexactsize 1
-     text "Waehle das Ziel, fuer das passende Gegenstaende aus deinem Inventar dauerhaft abgegeben werden sollen:"
+     text "#STR_DME_TASKS_DLG_HANDOVER_BODY"
      font "gui/fonts/metronbook16"
      "exact text" 1
      "exact text size" 13
@@ -169,7 +169,7 @@ PanelWidgetClass dme_tasks_handover_root {
      vexactsize 1
      style Editor
      "no focus" 1
-     text "ABBRECHEN"
+     text "#STR_DME_TASKS_BTN_CANCEL"
      font "gui/fonts/metronbook16"
     }
    }

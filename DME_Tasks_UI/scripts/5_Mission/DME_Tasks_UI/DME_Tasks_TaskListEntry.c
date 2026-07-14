@@ -94,23 +94,23 @@ class DME_Tasks_TaskListEntry : ScriptedWidgetEventHandler {
 			m_DME_Root.SetColor(ARGB(255, 26, 30, 41));
 		}
 		if (m_DME_StateText) {
-			m_DME_StateText.SetText("FILTER");
+			m_DME_StateText.SetText(DME_Tasks_LocKeys.MENU_FILTER);
 		}
 		if (m_DME_StatePanel) {
 			m_DME_StatePanel.SetColor(ARGB(255, 60, 66, 82));
 		}
 		if (m_DME_TitleText) {
-			m_DME_TitleText.SetText(taskCount.ToString() + " AUFGABEN");
+			m_DME_TitleText.SetText(DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TASK_COUNT, taskCount.ToString()));
 		}
 		if (m_DME_InfoText) {
 			if (showCompletedLocked) {
-				m_DME_InfoText.SetText("ABGESCHL./GESPERRTE: AN");
+				m_DME_InfoText.SetText(DME_Tasks_LocKeys.MENU_SHOW_HIDDEN_ON);
 			} else {
-				m_DME_InfoText.SetText("ABGESCHL./GESPERRTE: AUS");
+				m_DME_InfoText.SetText(DME_Tasks_LocKeys.MENU_SHOW_HIDDEN_OFF);
 			}
 		}
 		if (m_DME_ProgressText) {
-			m_DME_ProgressText.SetText("[UMSCHALTEN]");
+			m_DME_ProgressText.SetText(DME_Tasks_LocKeys.MENU_TOGGLE);
 		}
 	}
 
@@ -173,6 +173,6 @@ class DME_Tasks_TaskListEntry : ScriptedWidgetEventHandler {
 		if (total == 0) {
 			return "";
 		}
-		return done.ToString() + "/" + total.ToString() + " ZIELE";
+		return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJECTIVES_SHORT, done.ToString(), total.ToString());
 	}
 }

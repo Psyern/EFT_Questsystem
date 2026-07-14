@@ -123,7 +123,7 @@ class DME_Tasks_HandoverProcessor {
 
 		//! Abgabeort pruefen, falls das Objective eine Zone definiert (§6.5)
 		if (objectiveDef.Zone && !IsPlayerInZone(player, objectiveDef.Zone)) {
-			engine.NotifyPlayer(uid, title, "Du bist nicht am Abgabeort", EDME_Tasks_NotificationType.WARNING);
+			engine.NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_NOT_AT_HANDOVER_LOCATION, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
@@ -144,14 +144,16 @@ class DME_Tasks_HandoverProcessor {
 
 		if (matched.Count() == 0) {
 			if (notifyWhenNoItems) {
-				engine.NotifyPlayer(uid, title, "Keine passenden Gegenstaende im Inventar", EDME_Tasks_NotificationType.WARNING);
+				engine.NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_NO_MATCHING_ITEMS, EDME_Tasks_NotificationType.WARNING);
 			}
 			return;
 		}
 
 		if (!objectiveDef.AllowPartialHandover && matched.Count() < remaining) {
-			string partialMessage = "Teilabgabe nicht erlaubt — benoetigt: " + remaining.ToString() + ", vorhanden: " + matched.Count().ToString();
-			engine.NotifyPlayer(uid, title, partialMessage, EDME_Tasks_NotificationType.WARNING);
+			string requiredParam = remaining.ToString();
+			int availableCount = matched.Count();
+			string availableParam = availableCount.ToString();
+			engine.NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_PARTIAL_NOT_ALLOWED, EDME_Tasks_NotificationType.WARNING, requiredParam, availableParam);
 			return;
 		}
 
@@ -186,8 +188,10 @@ class DME_Tasks_HandoverProcessor {
 		if (newRemaining < 0) {
 			newRemaining = 0;
 		}
-		string message = "Abgegeben: " + removed.ToString() + " — Benoetigt: " + progress.Required.ToString() + " — Verbleibend: " + newRemaining.ToString();
-		engine.NotifyPlayer(uid, title, message, EDME_Tasks_NotificationType.SUCCESS);
+		string handedParam = removed.ToString();
+		string totalRequiredParam = progress.Required.ToString();
+		string remainingParam = newRemaining.ToString();
+		engine.NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_HANDOVER_RESULT, EDME_Tasks_NotificationType.SUCCESS, handedParam, totalRequiredParam, remainingParam);
 
 		DME_Tasks_Log.Info("Handover: %1 hat %2 Item(s) abgegeben (%3)", uid, removed.ToString(), questId + "/" + objectiveId);
 	}

@@ -51,45 +51,55 @@ class DME_Tasks_PrereqEvaluator {
 	}
 
 	bool IsAvailable(string uid, DME_Tasks_QuestDef def) {
-		string reason = Evaluate(uid, def);
+		string unusedP1;
+		string unusedP2;
+		string reason = Evaluate(uid, def, unusedP1, unusedP2);
 		return reason == "";
 	}
 
-	//! "" = verfuegbar, sonst anzeigbarer Sperrgrund.
-	string GetLockReason(string uid, DME_Tasks_QuestDef def) {
-		return Evaluate(uid, def);
+	//! "" = available. Otherwise a stringtable key following the '#' rule (DME_Tasks_LocKeys
+	//! constant, e.g. "#STR_DME_TASKS_LOCK_*") resolved on the client, with p1/p2 filling %1/%2.
+	//! Server-only: never resolves the key itself.
+	string GetLockReasonKey(string uid, DME_Tasks_QuestDef def, out string p1, out string p2) {
+		return Evaluate(uid, def, p1, p2);
 	}
 
 	// ------------------------------------------------------------------
 	// intern
 	// ------------------------------------------------------------------
 
-	protected string Evaluate(string uid, DME_Tasks_QuestDef def) {
+	//! Runs all prerequisite checks in order and returns "" (available) or the DME_Tasks_LocKeys
+	//! constant ("#STR_DME_TASKS_..." stringtable key) for the first failing check. p1/p2 carry the
+	//! %1/%2 placeholder values (only LOCK_LEVEL_REQUIRED and LOCK_TRADER_LEVEL_REQUIRED use p1).
+	protected string Evaluate(string uid, DME_Tasks_QuestDef def, out string p1, out string p2) {
+		p1 = "";
+		p2 = "";
+
 		if (!def) {
-			return "Unbekannte Quest";
+			return DME_Tasks_LocKeys.NOTIF_UNKNOWN_QUEST;
 		}
 
 		DME_Tasks_PlayerState state = DME_Tasks_PlayerStore.GetInstance().Get(uid);
 		if (!state) {
-			return "Spielerdaten nicht geladen";
+			return DME_Tasks_LocKeys.LOCK_STATE_NOT_LOADED;
 		}
 
 		if (!def.Repeatable && HasCompleted(state, def.QuestId)) {
-			return "Bereits abgeschlossen";
+			return DME_Tasks_LocKeys.LOCK_ALREADY_COMPLETED;
 		}
 
 		int cooldownUntil;
 		if (state.Cooldowns.Find(def.QuestId, cooldownUntil)) {
 			int now = DME_Tasks_TimeUtil.NowEpoch();
 			if (now < cooldownUntil) {
-				return "Cooldown aktiv";
+				return DME_Tasks_LocKeys.LOCK_COOLDOWN;
 			}
 		}
 
 		//! Unlock-Gating (§6.2): unlock-gated Quests sind nur mit Freischaltung verfuegbar
 		if (m_DME_UnlockGatedQuests.Contains(def.QuestId)) {
 			if (!DME_Tasks_UnlockLedger.GetInstance().IsQuestUnlocked(uid, def.QuestId)) {
-				return "Noch nicht freigeschaltet";
+				return DME_Tasks_LocKeys.LOCK_NOT_UNLOCKED;
 			}
 		}
 
@@ -99,24 +109,26 @@ class DME_Tasks_PrereqEvaluator {
 		}
 
 		if (prereqs.MinimumPlayerLevel > 0 && state.PlayerLevel < prereqs.MinimumPlayerLevel) {
-			return "Level " + prereqs.MinimumPlayerLevel.ToString() + " benoetigt";
+			p1 = prereqs.MinimumPlayerLevel.ToString();
+			return DME_Tasks_LocKeys.LOCK_LEVEL_REQUIRED;
 		}
 
 		if (!CheckFaction(uid, prereqs)) {
-			return "Falsche Fraktion";
+			return DME_Tasks_LocKeys.LOCK_WRONG_FACTION;
 		}
 
 		if (prereqs.MinimumTraderReputation > 0) {
 			float reputation = DME_Tasks_TraderService.GetInstance().GetReputation(uid, def.TraderId);
 			if (reputation < prereqs.MinimumTraderReputation) {
-				return "Zu wenig Ruf beim Haendler";
+				return DME_Tasks_LocKeys.LOCK_REPUTATION_LOW;
 			}
 		}
 
 		if (prereqs.RequiredTraderLevel > 0) {
 			int loyaltyLevel = DME_Tasks_TraderService.GetInstance().GetLoyaltyLevel(uid, def.TraderId);
 			if (loyaltyLevel < prereqs.RequiredTraderLevel) {
-				return "Haendler-Stufe " + prereqs.RequiredTraderLevel.ToString() + " benoetigt";
+				p1 = prereqs.RequiredTraderLevel.ToString();
+				return DME_Tasks_LocKeys.LOCK_TRADER_LEVEL_REQUIRED;
 			}
 		}
 
@@ -125,7 +137,7 @@ class DME_Tasks_PrereqEvaluator {
 				continue;
 			}
 			if (!HasCompleted(state, requiredQuestId)) {
-				return "Vorherige Quest nicht abgeschlossen";
+				return DME_Tasks_LocKeys.LOCK_PREV_QUEST;
 			}
 		}
 
@@ -134,7 +146,7 @@ class DME_Tasks_PrereqEvaluator {
 				continue;
 			}
 			if (HasCompleted(state, blockedQuestId)) {
-				return "Durch andere Questlinie blockiert";
+				return DME_Tasks_LocKeys.LOCK_BLOCKED_QUESTLINE;
 			}
 		}
 
@@ -144,7 +156,7 @@ class DME_Tasks_PrereqEvaluator {
 				continue;
 			}
 			if (state.Decisions.Find(requiredDecision) == -1) {
-				return "Erforderliche Entscheidung fehlt";
+				return DME_Tasks_LocKeys.LOCK_DECISION_MISSING;
 			}
 		}
 
@@ -153,28 +165,28 @@ class DME_Tasks_PrereqEvaluator {
 				continue;
 			}
 			if (state.Decisions.Find(blockedDecision) != -1) {
-				return "Durch getroffene Entscheidung blockiert";
+				return DME_Tasks_LocKeys.LOCK_BLOCKED_DECISION;
 			}
 		}
 
 		if (!CheckSkillRequirement(uid, prereqs)) {
-			return "Skill-Anforderung nicht erfuellt";
+			return DME_Tasks_LocKeys.LOCK_SKILL;
 		}
 
 		if (!CheckSeasonLevel(uid, prereqs)) {
-			return "Season-Level zu niedrig";
+			return DME_Tasks_LocKeys.LOCK_SEASON_LEVEL;
 		}
 
 		if (!CheckBossProgress(uid, prereqs)) {
-			return "Boss-Fortschritt fehlt";
+			return DME_Tasks_LocKeys.LOCK_BOSS_PROGRESS;
 		}
 
 		if (prereqs.RequiredItem != "" && !HasRequiredItem(uid, prereqs.RequiredItem)) {
-			return "Benoetigter Gegenstand fehlt";
+			return DME_Tasks_LocKeys.LOCK_ITEM_MISSING;
 		}
 
 		if (!CheckTimeWindow(prereqs.FromHour, prereqs.ToHour)) {
-			return "Nur zu bestimmter Tageszeit verfuegbar";
+			return DME_Tasks_LocKeys.LOCK_TIME_WINDOW;
 		}
 
 		return "";

@@ -43,7 +43,7 @@ FrameWidgetClass dme_tasks_menu_root {
      vexactsize 1
      style Editor
      "no focus" 1
-     text "KAUFEN"
+     text "#STR_DME_TASKS_MENU_TAB_BUY"
      font "gui/fonts/metronbook16"
     }
     ButtonWidgetClass tab_sell_button {
@@ -57,7 +57,7 @@ FrameWidgetClass dme_tasks_menu_root {
      vexactsize 1
      style Editor
      "no focus" 1
-     text "VERKAUFEN"
+     text "#STR_DME_TASKS_MENU_TAB_SELL"
      font "gui/fonts/metronbook16"
     }
     ButtonWidgetClass tab_tasks_button {
@@ -71,7 +71,7 @@ FrameWidgetClass dme_tasks_menu_root {
      vexactsize 1
      style Editor
      "no focus" 1
-     text "AUFGABEN"
+     text "#STR_DME_TASKS_MENU_TAB_TASKS"
      font "gui/fonts/metronbook16"
     }
     ButtonWidgetClass tab_services_button {
@@ -85,7 +85,7 @@ FrameWidgetClass dme_tasks_menu_root {
      vexactsize 1
      style Editor
      "no focus" 1
-     text "DIENSTE"
+     text "#STR_DME_TASKS_MENU_TAB_SERVICES"
      font "gui/fonts/metronbook16"
     }
     ButtonWidgetClass close_button {
@@ -282,7 +282,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "ALLE"
+       text "#STR_DME_TASKS_MENU_FILTER_ALL"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_story_button {
@@ -292,7 +292,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "STORY"
+       text "#STR_DME_TASKS_CAT_STORY"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_side_button {
@@ -302,7 +302,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "NEBEN"
+       text "#STR_DME_TASKS_MENU_FILTER_SIDE"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_faction_button {
@@ -312,7 +312,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "FRAKTION"
+       text "#STR_DME_TASKS_CAT_FACTION"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_boss_button {
@@ -322,7 +322,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "BOSS"
+       text "#STR_DME_TASKS_CAT_BOSS"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_expedition_button {
@@ -332,7 +332,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "EXPEDITION"
+       text "#STR_DME_TASKS_CAT_EXPEDITION"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_daily_button {
@@ -342,7 +342,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "TAEGLICH"
+       text "#STR_DME_TASKS_CAT_DAILY"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_weekly_button {
@@ -352,7 +352,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "WOECHENTLICH"
+       text "#STR_DME_TASKS_CAT_WEEKLY"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_completed_button {
@@ -362,7 +362,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "ABGESCHLOSSEN"
+       text "#STR_DME_TASKS_STATE_COMPLETED"
        font "gui/fonts/metronbook16"
       }
       ButtonWidgetClass filter_failed_button {
@@ -372,7 +372,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactsize 1
        style Editor
        "no focus" 1
-       text "FEHLGESCHLAGEN"
+       text "#STR_DME_TASKS_STATE_FAILED"
        font "gui/fonts/metronbook16"
       }
      }
@@ -462,7 +462,7 @@ FrameWidgetClass dme_tasks_menu_root {
        vexactpos 0
        hexactsize 0
        vexactsize 1
-       text "SYNCHRONISIERE ..."
+       text "#STR_DME_TASKS_MENU_SYNCING"
        font "gui/fonts/metronbook22"
        "exact text" 1
        "exact text size" 22

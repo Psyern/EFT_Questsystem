@@ -134,7 +134,7 @@ class DME_Tasks_ExpeditionService {
 		}
 
 		foreach (string failQuestId : toFail) {
-			engine.FailQuest(uid, failQuestId, "Tod in Expedition");
+			engine.FailQuest(uid, failQuestId, DME_Tasks_LocKeys.NOTIF_REASON_EXPEDITION_DEATH);
 		}
 	}
 
@@ -197,7 +197,7 @@ class DME_Tasks_ExpeditionService {
 		}
 
 		foreach (string failQuestId : toFail) {
-			engine.FailQuest(uid, failQuestId, "Combat-Logout");
+			engine.FailQuest(uid, failQuestId, DME_Tasks_LocKeys.NOTIF_REASON_COMBAT_LOGOUT);
 		}
 	}
 

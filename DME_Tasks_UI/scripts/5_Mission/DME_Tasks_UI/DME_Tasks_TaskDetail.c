@@ -1,18 +1,9 @@
 //! Text-Bau-Helfer der Tasks-UI: deutsche Anzeige-Texte aus Sync-Modellen (reine Anzeige-Logik).
 //! Wird von TaskDetail, TaskListEntry und den Dialogen gemeinsam genutzt.
 class DME_Tasks_UITextUtil {
-	//! Kurzes deutsches State-Label fuer den State-Chip.
+	//! Lokalisiertes State-Label fuer den State-Chip (aufgeloest, kein '#'-Key).
 	static string StateLabel(int state) {
-		if (state == EDME_Tasks_QuestState.LOCKED) return "GESPERRT";
-		if (state == EDME_Tasks_QuestState.AVAILABLE) return "VERFUEGBAR";
-		if (state == EDME_Tasks_QuestState.ACTIVE) return "AKTIV";
-		if (state == EDME_Tasks_QuestState.READY_TO_TURN_IN) return "ABGABEBEREIT";
-		if (state == EDME_Tasks_QuestState.COMPLETED) return "ABGESCHLOSSEN";
-		if (state == EDME_Tasks_QuestState.FAILED) return "FEHLGESCHLAGEN";
-		if (state == EDME_Tasks_QuestState.EXPIRED) return "ABGELAUFEN";
-		if (state == EDME_Tasks_QuestState.ABANDONED) return "ABGEBROCHEN";
-		if (state == EDME_Tasks_QuestState.COOLDOWN) return "COOLDOWN";
-		return "UNBEKANNT";
+		return DME_Tasks_Loc.Resolve(DME_Tasks_EnumUtil.StateDisplayKey(state));
 	}
 
 	//! ARGB-Farbe des State-Chips (Widget.SetColor).
@@ -29,16 +20,9 @@ class DME_Tasks_UITextUtil {
 		return ARGB(255, 90, 90, 100);
 	}
 
-	//! Deutsches Kategorie-Label aus dem Sync-String (unbekannt -> Rohstring, kein Log-Spam).
+	//! Lokalisiertes Kategorie-Label aus dem Sync-String (unbekannt -> Rohstring, kein Log-Spam).
 	static string CategoryLabel(string category) {
-		if (category == "STORY") return "STORY";
-		if (category == "SIDE") return "NEBENAUFGABE";
-		if (category == "FACTION") return "FRAKTION";
-		if (category == "BOSS") return "BOSS";
-		if (category == "EXPEDITION") return "EXPEDITION";
-		if (category == "DAILY") return "TAEGLICH";
-		if (category == "WEEKLY") return "WOECHENTLICH";
-		return category;
+		return DME_Tasks_Loc.Resolve(DME_Tasks_EnumUtil.CategoryDisplayKeyFromString(category));
 	}
 
 	//! Orts-Hinweis fuer die Listenzeile: erste Zone (ZoneId) aus den Objectives, sonst "".
@@ -134,12 +118,12 @@ class DME_Tasks_UITextUtil {
 		return "";
 	}
 
-	//! Deutsche Bezeichnung gaengiger Zielkategorien (Konvention CONTRACTS 6.7).
+	//! Lokalisierte Bezeichnung gaengiger Zielkategorien (Konvention CONTRACTS 6.7).
 	static string TargetCategoryLabel(string category) {
-		if (category == "PLAYER") return "Spieler";
-		if (category == "INFECTED") return "Infizierte";
-		if (category == "ANIMAL") return "Tiere";
-		if (category == "BANDIT_AI") return "Banditen (KI)";
+		if (category == "PLAYER") return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TARGET_PLAYERS);
+		if (category == "INFECTED") return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TARGET_INFECTED);
+		if (category == "ANIMAL") return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TARGET_ANIMALS);
+		if (category == "BANDIT_AI") return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TARGET_BANDITS);
 		return category;
 	}
 
@@ -181,93 +165,93 @@ class DME_Tasks_UITextUtil {
 
 		if (objType == EDME_Tasks_ObjectiveType.KILL) {
 			if (target == "") {
-				target = "Gegner";
+				target = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TARGET_ENEMY);
 			}
-			text = "Toete " + amountText + " x " + target;
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_KILL, amountText, target);
 		} else if (objType == EDME_Tasks_ObjectiveType.COLLECT) {
-			text = "Sammle " + amountText + " x " + target;
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_COLLECT, amountText, target);
 		} else if (objType == EDME_Tasks_ObjectiveType.HANDOVER) {
-			text = "Uebergib " + amountText + " x " + target;
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_HANDOVER, amountText, target);
 		} else if (objType == EDME_Tasks_ObjectiveType.DELIVER) {
-			text = "Liefere " + amountText + " x " + target;
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_DELIVER, amountText, target);
 			if (zone != "") {
-				text = text + " nach " + zone;
+				text = text + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_TO_ZONE, zone);
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.TRAVEL) {
 			if (zone != "") {
-				text = "Erreiche das Gebiet " + zone;
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_TRAVEL_ZONE, zone);
 			} else {
-				text = "Erreiche das Zielgebiet";
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_TRAVEL);
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.DISCOVER) {
 			if (zone != "") {
-				text = "Entdecke " + zone;
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_DISCOVER_ZONE, zone);
 			} else {
-				text = "Entdecke den Zielort";
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_DISCOVER);
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.MARK) {
-			text = "Markiere das Ziel";
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_MARK);
 			if (target != "") {
 				text = text + ": " + target;
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.STASH) {
-			text = "Verstecke " + amountText + " x " + target;
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_STASH, amountText, target);
 		} else if (objType == EDME_Tasks_ObjectiveType.INTERACT) {
 			if (target == "") {
-				target = "dem Ziel";
+				target = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TARGET_DEFAULT);
 			}
-			text = "Interagiere mit " + target;
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_INTERACT, target);
 			if (def.Amount > 1) {
 				text = text + " (" + amountText + "x)";
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.SURVIVE) {
-			text = "Ueberlebe " + FormatDuration(def.Amount);
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_SURVIVE, FormatDuration(def.Amount));
 		} else if (objType == EDME_Tasks_ObjectiveType.RETURN_TO_TRADER) {
 			if (def.MustBeAlive) {
-				text = "Kehre lebend zum Haendler zurueck";
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_RETURN_ALIVE);
 			} else {
-				text = "Kehre zum Haendler zurueck";
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_RETURN);
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.CRAFT) {
-			text = "Stelle " + amountText + " x " + target + " her";
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_CRAFT, amountText, target);
 		} else if (objType == EDME_Tasks_ObjectiveType.ESCORT) {
-			text = "Eskortiere das Ziel";
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_ESCORT);
 			if (zone != "") {
-				text = text + " nach " + zone;
+				text = text + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_TO_ZONE, zone);
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.DEFEND) {
 			if (zone != "") {
-				text = "Verteidige " + zone;
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_DEFEND_ZONE, zone);
 			} else {
-				text = "Verteidige das Gebiet";
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_DEFEND);
 			}
 			text = text + " (" + FormatDuration(def.Amount) + ")";
 		} else if (objType == EDME_Tasks_ObjectiveType.USE_ITEM) {
 			if (target == "") {
-				target = "das vorgesehene Item";
+				target = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_TARGET_ITEM);
 			}
-			text = "Benutze " + target;
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_USE_ITEM, target);
 		} else if (objType == EDME_Tasks_ObjectiveType.SIGNAL) {
-			text = "Setze das Signal ab";
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_SIGNAL);
 			if (zone != "") {
 				text = text + " (" + zone + ")";
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.GROUP) {
-			text = "Erfuelle das Gruppenziel";
+			text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_GROUP);
 		} else if (objType == EDME_Tasks_ObjectiveType.BOSS) {
 			if (def.BossId != "") {
-				text = "Toete den Boss " + def.BossId;
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_BOSS_NAMED, def.BossId);
 			} else {
-				text = "Toete den Boss";
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_BOSS);
 			}
 		} else if (objType == EDME_Tasks_ObjectiveType.EXTRACT) {
 			if (zone != "") {
-				text = "Extrahiere ueber " + zone;
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_EXTRACT_ZONE, zone);
 			} else {
-				text = "Extrahiere aus dem Einsatzgebiet";
+				text = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_EXTRACT);
 			}
 			if (def.Amount > 1) {
-				text = text + " (" + FormatDuration(def.Amount) + " im Punkt)";
+				text = text + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_EXTRACT_HOLD, FormatDuration(def.Amount));
 			}
 		} else {
 			text = def.Type + " x " + amountText;
@@ -281,20 +265,20 @@ class DME_Tasks_UITextUtil {
 		string suffix = "";
 		if (def.MinimumDistance > 0) {
 			int minDistance = Math.Round(def.MinimumDistance);
-			suffix = suffix + " | ab " + minDistance.ToString() + " m";
+			suffix = suffix + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_SUFFIX_MIN_DIST, minDistance.ToString());
 		}
 		if (def.MaximumDistance > 0) {
 			int maxDistance = Math.Round(def.MaximumDistance);
-			suffix = suffix + " | max. " + maxDistance.ToString() + " m";
+			suffix = suffix + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_SUFFIX_MAX_DIST, maxDistance.ToString());
 		}
 		if (def.SuppressorRequired) {
-			suffix = suffix + " | mit Schalldaempfer";
+			suffix = suffix + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_SUFFIX_SUPPRESSOR);
 		}
 		if (def.HitZone != "") {
-			suffix = suffix + " | Trefferzone: " + def.HitZone;
+			suffix = suffix + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_SUFFIX_HITZONE, def.HitZone);
 		}
 		if (def.FromHour >= 0 && def.ToHour >= 0) {
-			suffix = suffix + " | " + def.FromHour.ToString() + "-" + def.ToHour.ToString() + " Uhr";
+			suffix = suffix + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_OBJ_SUFFIX_TIME, def.FromHour.ToString(), def.ToHour.ToString());
 		}
 		return suffix;
 	}
@@ -302,24 +286,24 @@ class DME_Tasks_UITextUtil {
 	//! Belohnungs-Zeilen (XP/Geld/Rep/Rival-Rep/Items/Skill/Season) als RichText mit <br/>.
 	static string RewardText(DME_Tasks_QuestSyncEntry entry) {
 		if (!entry || !entry.Rewards) {
-			return "KEINE";
+			return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_NONE);
 		}
 
 		DME_Tasks_RewardDef rewards = entry.Rewards;
 		string result = "";
 
 		if (rewards.PlayerExperience > 0) {
-			result = AppendLine(result, "+ " + rewards.PlayerExperience.ToString() + " XP");
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_XP, rewards.PlayerExperience.ToString()));
 		}
 		if (rewards.Currency > 0) {
-			result = AppendLine(result, "+ " + rewards.Currency.ToString() + " RUB");
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_CURRENCY, rewards.Currency.ToString()));
 		}
 		if (rewards.TraderReputation != 0) {
-			string repLine = rewards.TraderReputation.ToString() + " Reputation";
+			string repValue = rewards.TraderReputation.ToString();
 			if (rewards.TraderReputation > 0) {
-				repLine = "+ " + repLine;
+				repValue = "+ " + repValue;
 			}
-			result = AppendLine(result, repLine);
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_REPUTATION, repValue));
 		}
 		if (rewards.RivalReputation) {
 			for (int r = 0; r < rewards.RivalReputation.Count(); r++) {
@@ -327,11 +311,11 @@ class DME_Tasks_UITextUtil {
 				if (!rival || rival.Delta == 0) {
 					continue;
 				}
-				string rivalLine = rival.TraderId + ": " + rival.Delta.ToString() + " Reputation";
+				string rivalDelta = rival.Delta.ToString();
 				if (rival.Delta > 0) {
-					rivalLine = rival.TraderId + ": +" + rival.Delta.ToString() + " Reputation";
+					rivalDelta = "+" + rivalDelta;
 				}
-				result = AppendLine(result, rivalLine);
+				result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_RIVAL_REP, rival.TraderId, rivalDelta));
 			}
 		}
 		if (rewards.Items) {
@@ -340,22 +324,22 @@ class DME_Tasks_UITextUtil {
 				if (!item || item.ClassName == "") {
 					continue;
 				}
-				result = AppendLine(result, "+ " + item.Amount.ToString() + " x " + ItemDisplayName(item.ClassName));
+				result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_ITEM, item.Amount.ToString(), ItemDisplayName(item.ClassName)));
 			}
 		}
 		if (rewards.SkillPoints > 0) {
-			result = AppendLine(result, "+ " + rewards.SkillPoints.ToString() + " Skillpunkte");
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_SKILLPOINTS, rewards.SkillPoints.ToString()));
 		}
 		if (rewards.SeasonXp > 0) {
-			result = AppendLine(result, "+ " + rewards.SeasonXp.ToString() + " Season-XP");
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_SEASON_XP, rewards.SeasonXp.ToString()));
 		}
 
 		if (entry.Choices && entry.Choices.Count() > 0) {
-			result = AppendLine(result, "HINWEIS: Entscheidungs-Belohnungen ersetzen die Basis-Belohnung (Button ENTSCHEIDUNG).");
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REWARD_CHOICE_HINT));
 		}
 
 		if (result == "") {
-			return "KEINE";
+			return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_NONE);
 		}
 		return result;
 	}
@@ -363,20 +347,20 @@ class DME_Tasks_UITextUtil {
 	//! "Penalties for failure"-Zeilen (FailOnDeath / TimeLimit / FailOnFactionChange).
 	static string PenaltyText(DME_Tasks_QuestSyncEntry entry) {
 		if (!entry) {
-			return "KEINE";
+			return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_NONE);
 		}
 		string result = "";
 		if (entry.FailOnDeath) {
-			result = AppendLine(result, "! Tod fuehrt zum Fehlschlag");
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_PENALTY_DEATH));
 		}
 		if (entry.TimeLimit > 0) {
-			result = AppendLine(result, "! Zeitlimit: " + FormatDuration(entry.TimeLimit));
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_PENALTY_TIMELIMIT, FormatDuration(entry.TimeLimit)));
 		}
 		if (entry.FailOnFactionChange) {
-			result = AppendLine(result, "! Fraktionswechsel fuehrt zum Fehlschlag");
+			result = AppendLine(result, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_PENALTY_FACTION));
 		}
 		if (result == "") {
-			return "KEINE";
+			return DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_NONE);
 		}
 		return result;
 	}
@@ -513,9 +497,9 @@ class DME_Tasks_TaskDetail : ScriptedWidgetEventHandler {
 		}
 
 		if (m_DME_CategoryText) {
-			string categoryText = "KATEGORIE: " + DME_Tasks_UITextUtil.CategoryLabel(entry.Category);
+			string categoryText = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_CATEGORY_PREFIX, DME_Tasks_UITextUtil.CategoryLabel(entry.Category));
 			if (entry.Repeatable) {
-				categoryText = categoryText + " | WIEDERHOLBAR";
+				categoryText = categoryText + DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_REPEATABLE);
 			}
 			m_DME_CategoryText.SetText(categoryText);
 		}
@@ -535,9 +519,10 @@ class DME_Tasks_TaskDetail : ScriptedWidgetEventHandler {
 
 		if (m_DME_LockText) {
 			bool showLock = false;
-			if (entry.State == EDME_Tasks_QuestState.LOCKED && entry.LockReason != "") {
+			if (entry.State == EDME_Tasks_QuestState.LOCKED && entry.LockReasonKey != "") {
 				showLock = true;
-				m_DME_LockText.SetText("GESPERRT: " + entry.LockReason);
+				string lockReason = DME_Tasks_Loc.Resolve(entry.LockReasonKey, entry.LockReasonP1, entry.LockReasonP2);
+				m_DME_LockText.SetText(DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_LOCKED_REASON, lockReason));
 			}
 			m_DME_LockText.Show(showLock);
 		}
@@ -639,7 +624,7 @@ class DME_Tasks_TaskDetail : ScriptedWidgetEventHandler {
 			int extraCount = objectiveCount - OBJECTIVE_ROW_COUNT + 1;
 			TextWidget lastText = m_DME_ObjectiveTexts.Get(OBJECTIVE_ROW_COUNT - 1);
 			if (lastText) {
-				lastText.SetText("... und " + extraCount.ToString() + " weitere Ziele");
+				lastText.SetText(DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.MENU_MORE_OBJECTIVES, extraCount.ToString()));
 			}
 			TextWidget lastCheck = m_DME_ObjectiveChecks.Get(OBJECTIVE_ROW_COUNT - 1);
 			if (lastCheck) {
@@ -679,10 +664,10 @@ class DME_Tasks_TaskDetail : ScriptedWidgetEventHandler {
 		TextWidget check = m_DME_ObjectiveChecks.Get(rowIndex);
 		if (check) {
 			if (done) {
-				check.SetText("[X]");
+				check.SetText(DME_Tasks_LocKeys.MENU_CHECK_DONE);
 				check.SetColor(ARGB(255, 110, 200, 120));
 			} else {
-				check.SetText("[ ]");
+				check.SetText(DME_Tasks_LocKeys.MENU_CHECK_OPEN);
 				check.SetColor(ARGB(255, 160, 160, 170));
 			}
 		}
@@ -781,15 +766,15 @@ class DME_Tasks_TaskDetail : ScriptedWidgetEventHandler {
 
 		int maxTracked = DME_Tasks_Const.MAX_TRACKED_QUESTS;
 		if (tracked) {
-			m_DME_TrackButton.SetText("NICHT VERFOLGEN");
+			m_DME_TrackButton.SetText(DME_Tasks_LocKeys.BTN_UNTRACK);
 			m_DME_TrackButton.Enable(true);
 			m_DME_TrackButton.SetAlpha(1.0);
 		} else if (trackedCount >= maxTracked) {
-			m_DME_TrackButton.SetText("TRACKER VOLL (" + maxTracked.ToString() + ")");
+			m_DME_TrackButton.SetText(DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.BTN_TRACKER_FULL, maxTracked.ToString()));
 			m_DME_TrackButton.Enable(false);
 			m_DME_TrackButton.SetAlpha(0.35);
 		} else {
-			m_DME_TrackButton.SetText("VERFOLGEN");
+			m_DME_TrackButton.SetText(DME_Tasks_LocKeys.BTN_TRACK);
 			m_DME_TrackButton.Enable(true);
 			m_DME_TrackButton.SetAlpha(1.0);
 		}

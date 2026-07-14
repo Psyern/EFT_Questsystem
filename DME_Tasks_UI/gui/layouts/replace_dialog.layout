@@ -35,7 +35,7 @@ PanelWidgetClass dme_tasks_replace_root {
      vexactpos 1
      hexactsize 0
      vexactsize 1
-     text "OPERATIVE AUFGABE ERSETZEN?"
+     text "#STR_DME_TASKS_DLG_REPLACE_TITLE"
      font "gui/fonts/metronbook22"
      "exact text" 1
      "exact text size" 20
@@ -69,7 +69,7 @@ PanelWidgetClass dme_tasks_replace_root {
      vexactpos 1
      hexactsize 1
      vexactsize 1
-     text "Diese Aufgabe wird verworfen und durch eine neue operative Aufgabe ersetzt.<br/>Dafuer wird eine Gebuehr faellig (Hoehe laut Server-Konfiguration).<br/><br/>Fortfahren?"
+     text "#STR_DME_TASKS_DLG_REPLACE_BODY"
      font "gui/fonts/metronbook16"
      "exact text" 1
      "exact text size" 13
@@ -85,7 +85,7 @@ PanelWidgetClass dme_tasks_replace_root {
      vexactsize 1
      style Editor
      "no focus" 1
-     text "ERSETZEN"
+     text "#STR_DME_TASKS_BTN_REPLACE_CONFIRM"
      font "gui/fonts/metronbook16"
     }
     ButtonWidgetClass replace_cancel_button {
@@ -99,7 +99,7 @@ PanelWidgetClass dme_tasks_replace_root {
      vexactsize 1
      style Editor
      "no focus" 1
-     text "ABBRECHEN"
+     text "#STR_DME_TASKS_BTN_CANCEL"
      font "gui/fonts/metronbook16"
     }
    }

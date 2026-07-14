@@ -1,7 +1,7 @@
 {
 	"Version": 1,
 	"TraderId": "west_quartermaster",
-	"DisplayName": "Quartiermeister Rask",
+	"DisplayName": "#STR_DME_TASKS_SEED_TRADER_WEST",
 	"Faction": "WEST",
 	"LoyaltyLevels": [
 		{

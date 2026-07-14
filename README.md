@@ -18,6 +18,7 @@
   <img src="https://img.shields.io/badge/Items-Found_in_World-1ABC9C?style=flat-square" alt="Item Origin">
   <img src="https://img.shields.io/badge/Config-JSON-lightgrey?style=flat-square&logo=json&logoColor=white" alt="JSON">
   <img src="https://img.shields.io/badge/Authority-Server_Side-34495E?style=flat-square" alt="Server Authoritative">
+  <img src="https://img.shields.io/badge/Localized-EN_%7C_DE-9B59B6?style=flat-square" alt="Localized EN/DE">
 </p>
 
 <p align="center">
@@ -394,6 +395,22 @@ Add-on authors: the public seams are documented in [Add-on API](../../wiki/Add-o
 
 ---
 
+## Localization
+
+The framework is fully localized — every player sees the UI, notifications and lock reasons in **their
+own client language**, even on a mixed-language server. English and German ship in
+`DME_Tasks_Core/stringtable.csv`; untranslated languages fall back to clean English.
+
+- The server never sends display prose: notifications and lock reasons travel as **stringtable key +
+  parameters** and resolve on each client.
+- Your quest content localizes **opt-in**: `"Title": "Clear the Camp"` displays verbatim,
+  `"Title": "#STR_MYSERVER_Q002"` resolves against your own content-PBO stringtable.
+- `tools/loc_audit.py` verifies key coverage (missing/orphan keys fail the build).
+
+Details, format reference and translation guide: [Localization](../../wiki/Localization).
+
+---
+
 ## Persistence &amp; Security
 
 - Player states in `Players\<uid>.json` (uid = hashed DayZ id); atomic save (tmp → backup rotation →
@@ -440,6 +457,7 @@ The complete documentation lives in the **[Wiki](../../wiki)**:
 | [Item Origin](../../wiki/Item-Origin) | Found-in-World, origin types, seam API |
 | [Daily &amp; Weekly](../../wiki/Daily-and-Weekly) | templates, determinism, replacing |
 | [Expeditions](../../wiki/Expeditions) | extraction, combat logout |
+| [Localization](../../wiki/Localization) | stringtable, the `#` rule, translating content |
 | [Integrations](../../wiki/Integrations) | all adapters and their honest limits |
 | [Persistence &amp; Security](../../wiki/Persistence-and-Security) | saving, backups, authority, idempotency |
 | [Add-on API](../../wiki/Add-on-API) | public seams for add-ons |

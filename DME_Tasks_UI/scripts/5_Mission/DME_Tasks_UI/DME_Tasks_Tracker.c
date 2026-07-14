@@ -225,9 +225,9 @@ class DME_Tasks_Tracker {
 					done = progress.Done;
 				}
 
-				string label = def.Type;
+				string label = DME_Tasks_Loc.Resolve(DME_Tasks_EnumUtil.ObjectiveDisplayKeyFromString(def.Type));
 				if (label == "") {
-					label = "ZIEL";
+					label = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.HUD_OBJECTIVE);
 				}
 				FillRow(blockIdx, rowIdx, label, current, required, done);
 				rowIdx++;
@@ -244,7 +244,8 @@ class DME_Tasks_Tracker {
 				if (!fallbackProgress) {
 					continue;
 				}
-				FillRow(blockIdx, rowIdx, "ZIEL", fallbackProgress.Current, fallbackProgress.Required, fallbackProgress.Done);
+				string fallbackLabel = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.HUD_OBJECTIVE);
+				FillRow(blockIdx, rowIdx, fallbackLabel, fallbackProgress.Current, fallbackProgress.Required, fallbackProgress.Done);
 				rowIdx++;
 			}
 		}

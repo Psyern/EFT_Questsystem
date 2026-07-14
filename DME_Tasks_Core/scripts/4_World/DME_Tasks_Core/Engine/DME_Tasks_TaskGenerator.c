@@ -125,8 +125,8 @@ class DME_Tasks_TaskGenerator {
 		string dailyPath = DME_Tasks_Paths.GeneratedFile(todayKey);
 		string weeklyPath = DME_Tasks_Paths.GeneratedFile("week_" + weekKey);
 
-		m_DME_TodaySet = LoadOrGenerateSet(dailyPath, todayKey, configService.GetDailyTemplates(), settings.DailyQuestCount, "daily_" + todayKey, "DAILY", "Tagesauftrag");
-		m_DME_WeekSet = LoadOrGenerateSet(weeklyPath, weekKey, configService.GetWeeklyTemplates(), settings.WeeklyQuestCount, "weekly_" + weekKey, "WEEKLY", "Wochenauftrag");
+		m_DME_TodaySet = LoadOrGenerateSet(dailyPath, todayKey, configService.GetDailyTemplates(), settings.DailyQuestCount, "daily_" + todayKey, "DAILY", DME_Tasks_LocKeys.GEN_DAILY_TITLE);
+		m_DME_WeekSet = LoadOrGenerateSet(weeklyPath, weekKey, configService.GetWeeklyTemplates(), settings.WeeklyQuestCount, "weekly_" + weekKey, "WEEKLY", DME_Tasks_LocKeys.GEN_WEEKLY_TITLE);
 
 		int registeredDaily = RegisterSet(m_DME_TodaySet);
 		int registeredWeekly = RegisterSet(m_DME_WeekSet);
@@ -226,7 +226,7 @@ class DME_Tasks_TaskGenerator {
 
 		int templateIndex = rng.NextInt(0, validTemplates.Count());
 		DME_Tasks_TemplateDef templateDef = validTemplates.Get(templateIndex);
-		DME_Tasks_QuestDef newDef = BuildQuestFromTemplate(templateDef, rng, newQuestId, "DAILY", "Tagesauftrag");
+		DME_Tasks_QuestDef newDef = BuildQuestFromTemplate(templateDef, rng, newQuestId, "DAILY", DME_Tasks_LocKeys.GEN_DAILY_TITLE);
 
 		//! Registrieren + restart-stabil im heutigen Set persistieren
 		configService.RegisterRuntimeQuest(newDef);
@@ -235,7 +235,7 @@ class DME_Tasks_TaskGenerator {
 
 		//! Laufende Quest beenden (Index-/Tracking-Cleanup uebernimmt der Fail-Pfad der Engine)
 		if (engine.GetActiveQuest(uid, questId)) {
-			engine.FailQuest(uid, questId, "Auftrag ersetzt");
+			engine.FailQuest(uid, questId, DME_Tasks_LocKeys.NOTIF_REASON_REPLACED);
 		}
 
 		//! Tagesend-Cooldown (Mitternacht UTC) — persistiert via PlayerState.Cooldowns
@@ -466,19 +466,15 @@ class DME_Tasks_TaskGenerator {
 		def.Objectives.Insert(objective);
 		def.Rewards = BuildRewards(templateDef);
 
-		string label = BuildTargetLabel(templateDef, zoneName);
-		string verb = VerbForType(templateDef.ObjectiveType);
-		def.Title = titlePrefix + ": " + amount.ToString() + "x " + label + " " + verb;
-
-		string desc = "Automatisch generierter Auftrag (Vorlage " + templateDef.TemplateId + "). Ziel: " + amount.ToString() + "x " + label + " " + verb + ".";
-		if (zoneName != "") {
-			desc = desc + " Gebiet: " + zoneName + ".";
+		//! '#' rule: generated quests carry static stringtable keys (titlePrefix = GEN_*_TITLE from the
+		//! caller). The client renders the localized objective sentence, zone and time limit from the
+		//! ObjectiveDef itself, so no server-composed prose is needed.
+		def.Title = titlePrefix;
+		if (category == "WEEKLY") {
+			def.Description = DME_Tasks_LocKeys.GEN_WEEKLY_DESC;
+		} else {
+			def.Description = DME_Tasks_LocKeys.GEN_DAILY_DESC;
 		}
-		if (templateDef.TimeLimit > 0) {
-			int limitMinutes = templateDef.TimeLimit / 60;
-			desc = desc + " Zeitlimit: " + limitMinutes.ToString() + " Minuten.";
-		}
-		def.Description = desc;
 
 		return def;
 	}
@@ -572,47 +568,6 @@ class DME_Tasks_TaskGenerator {
 			return true;
 		}
 		return targetType == "AI";
-	}
-
-	private string BuildTargetLabel(DME_Tasks_TemplateDef templateDef, string zoneName) {
-		if (templateDef.TargetTypes && templateDef.TargetTypes.Count() > 0) {
-			string first = templateDef.TargetTypes.Get(0);
-			if (first != "") {
-				return first;
-			}
-		}
-		if (zoneName != "") {
-			return zoneName;
-		}
-		return templateDef.ObjectiveType;
-	}
-
-	private string VerbForType(string objectiveType) {
-		if (objectiveType == "KILL" || objectiveType == "BOSS") {
-			return "toeten";
-		}
-		if (objectiveType == "COLLECT") {
-			return "sammeln";
-		}
-		if (objectiveType == "HANDOVER" || objectiveType == "DELIVER") {
-			return "abgeben";
-		}
-		if (objectiveType == "TRAVEL" || objectiveType == "DISCOVER") {
-			return "besuchen";
-		}
-		if (objectiveType == "CRAFT") {
-			return "herstellen";
-		}
-		if (objectiveType == "SURVIVE") {
-			return "Sekunden ueberleben";
-		}
-		if (objectiveType == "EXTRACT") {
-			return "extrahieren";
-		}
-		if (objectiveType == "RETURN_TO_TRADER") {
-			return "lebend zum Haendler zurueckkehren";
-		}
-		return "erfuellen";
 	}
 
 	// ==================================================================

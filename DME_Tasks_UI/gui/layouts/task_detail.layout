@@ -31,7 +31,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "< ZURUECK"
+   text "#STR_DME_TASKS_BTN_BACK"
    font "gui/fonts/metronbook16"
   }
   TextWidgetClass detail_title_text {
@@ -108,7 +108,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactpos 0
    hexactsize 0
    vexactsize 1
-   text "BRIEFING"
+   text "#STR_DME_TASKS_MENU_SECTION_BRIEFING"
    font "gui/fonts/metronbook16"
    "exact text" 1
    "exact text size" 13
@@ -138,7 +138,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactpos 0
    hexactsize 0
    vexactsize 1
-   text "ZIELE"
+   text "#STR_DME_TASKS_MENU_SECTION_OBJECTIVES"
    font "gui/fonts/metronbook16"
    "exact text" 1
    "exact text size" 13
@@ -889,7 +889,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactpos 0
    hexactsize 0
    vexactsize 1
-   text "BELOHNUNGEN"
+   text "#STR_DME_TASKS_MENU_SECTION_REWARDS"
    font "gui/fonts/metronbook16"
    "exact text" 1
    "exact text size" 13
@@ -919,7 +919,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactpos 0
    hexactsize 0
    vexactsize 1
-   text "STRAFEN BEI FEHLSCHLAG"
+   text "#STR_DME_TASKS_MENU_SECTION_PENALTIES"
    font "gui/fonts/metronbook16"
    "exact text" 1
    "exact text size" 13
@@ -965,7 +965,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "ANNEHMEN"
+   text "#STR_DME_TASKS_BTN_ACCEPT"
    font "gui/fonts/metronbook16"
   }
   ButtonWidgetClass detail_turnin_button {
@@ -979,7 +979,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "ABSCHLUSS MELDEN"
+   text "#STR_DME_TASKS_BTN_TURNIN"
    font "gui/fonts/metronbook16"
   }
   ButtonWidgetClass detail_claim_button {
@@ -993,7 +993,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "BELOHNUNG ABHOLEN"
+   text "#STR_DME_TASKS_BTN_CLAIM"
    font "gui/fonts/metronbook16"
   }
   ButtonWidgetClass detail_choice_button {
@@ -1007,7 +1007,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "ENTSCHEIDUNG ..."
+   text "#STR_DME_TASKS_BTN_CHOICE"
    font "gui/fonts/metronbook16"
   }
   ButtonWidgetClass detail_handover_button {
@@ -1021,7 +1021,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "ITEMS ABGEBEN ..."
+   text "#STR_DME_TASKS_BTN_HANDOVER"
    font "gui/fonts/metronbook16"
   }
   ButtonWidgetClass detail_track_button {
@@ -1035,7 +1035,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "VERFOLGEN"
+   text "#STR_DME_TASKS_BTN_TRACK"
    font "gui/fonts/metronbook16"
   }
   ButtonWidgetClass detail_abandon_button {
@@ -1049,7 +1049,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "AUFGABE ABBRECHEN"
+   text "#STR_DME_TASKS_BTN_ABANDON"
    font "gui/fonts/metronbook16"
   }
   ButtonWidgetClass detail_replace_button {
@@ -1063,7 +1063,7 @@ FrameWidgetClass dme_tasks_detail_root {
    vexactsize 1
    style Editor
    "no focus" 1
-   text "AUFGABE ERSETZEN ..."
+   text "#STR_DME_TASKS_BTN_REPLACE"
    font "gui/fonts/metronbook16"
   }
  }

@@ -115,10 +115,13 @@ class DME_Tasks_UIModule : CF_ModuleWorld {
 		NotifyCacheUpdated();
 	}
 
-	private void OnNotification(string title, string message, int type) {
+	//! Localization boundary: keys resolve here (the '#' rule); the Notifier only ever sees final display text.
+	private void OnNotification(string titleRaw, string msgKey, string p1, string p2, string p3, int type) {
 		if (!g_Game || g_Game.IsDedicatedServer()) {
 			return;
 		}
+		string title = DME_Tasks_Loc.Resolve(titleRaw);
+		string message = DME_Tasks_Loc.Resolve(msgKey, p1, p2, p3);
 		DME_Tasks_Notifier.Show(title, message, type);
 	}
 

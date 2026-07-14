@@ -2,10 +2,10 @@
 <modded_inputs>
 	<inputs>
 		<actions>
-			<input name="UADMETasksMenu" loc="DME Tasks Menue oeffnen" />
+			<input name="UADMETasksMenu" loc="STR_DME_TASKS_INPUT_TOGGLE_MENU" />
 		</actions>
 
-		<sorting name="dmetasks" loc="DME Tasks">
+		<sorting name="dmetasks" loc="STR_DME_TASKS_INPUT_CATEGORY">
 			<input name="UADMETasksMenu" />
 		</sorting>
 	</inputs>

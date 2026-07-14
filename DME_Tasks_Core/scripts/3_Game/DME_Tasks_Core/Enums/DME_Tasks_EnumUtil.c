@@ -108,4 +108,56 @@ class DME_Tasks_EnumUtil
 		CF_Log.Warn("[DME_Tasks] Unknown quest state value: %1", s.ToString());
 		return "";
 	}
+
+	// ------------------------------------------------------------------
+	// Display keys ('#' rule): stringtable keys built mechanically from the
+	// enum value name (STR_DME_TASKS_<AREA>_<VALUE>). Unknown values return
+	// the raw input so the UI degrades to visible text instead of an empty label.
+	// ------------------------------------------------------------------
+
+	//! State int -> "#STR_DME_TASKS_STATE_<NAME>"; unknown -> "#STR_DME_TASKS_STATE_UNKNOWN".
+	static string StateDisplayKey(int s)
+	{
+		string name = QuestStateToString(s);
+		if (name == "") {
+			return "#STR_DME_TASKS_STATE_UNKNOWN";
+		}
+		return "#STR_DME_TASKS_STATE_" + name;
+	}
+
+	//! Category name string (sync models carry the name) -> "#STR_DME_TASKS_CAT_<NAME>"; unknown -> raw input.
+	static string CategoryDisplayKeyFromString(string category)
+	{
+		if (CategoryFromString(category) == -1) {
+			return category;
+		}
+		return "#STR_DME_TASKS_CAT_" + category;
+	}
+
+	//! Faction name string (trader sync carries the name) -> "#STR_DME_TASKS_FACTION_<NAME>"; unknown -> raw input.
+	static string FactionDisplayKeyFromString(string faction)
+	{
+		if (FactionFromString(faction) == -1) {
+			return faction;
+		}
+		return "#STR_DME_TASKS_FACTION_" + faction;
+	}
+
+	//! Objective type name string (defs carry the name) -> "#STR_DME_TASKS_OBJ_<NAME>"; unknown -> raw input.
+	static string ObjectiveDisplayKeyFromString(string objectiveType)
+	{
+		if (ObjectiveTypeFromString(objectiveType) == -1) {
+			return objectiveType;
+		}
+		return "#STR_DME_TASKS_OBJ_" + objectiveType;
+	}
+
+	//! Origin name string -> "#STR_DME_TASKS_ORIGIN_<NAME>"; unknown -> raw input. (Future tooltips.)
+	static string OriginDisplayKeyFromString(string origin)
+	{
+		if (OriginFromString(origin) == -1) {
+			return origin;
+		}
+		return "#STR_DME_TASKS_ORIGIN_" + origin;
+	}
 }

@@ -658,13 +658,13 @@ class DME_Tasks_Menu : UIScriptedMenu {
 			if (trader) {
 				m_DME_HeaderTraderName.SetText(trader.DisplayName);
 			} else {
-				m_DME_HeaderTraderName.SetText("KEIN HAENDLER");
+				m_DME_HeaderTraderName.SetText(DME_Tasks_LocKeys.MENU_NO_TRADER);
 			}
 		}
 
 		if (m_DME_HeaderFactionText) {
 			if (trader) {
-				m_DME_HeaderFactionText.SetText(trader.Faction);
+				m_DME_HeaderFactionText.SetText(DME_Tasks_EnumUtil.FactionDisplayKeyFromString(trader.Faction));
 			} else {
 				m_DME_HeaderFactionText.SetText("");
 			}

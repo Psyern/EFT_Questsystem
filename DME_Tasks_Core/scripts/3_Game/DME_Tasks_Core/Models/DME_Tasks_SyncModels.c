@@ -45,7 +45,9 @@ class DME_Tasks_QuestSyncEntry {
 	bool FailOnFactionChange;
 	int TimeLimit;
 	int State;
-	string LockReason;
+	string LockReasonKey;
+	string LockReasonP1;
+	string LockReasonP2;
 	ref array<ref DME_Tasks_ObjectiveDef> Objectives;
 	ref DME_Tasks_RewardDef Rewards;
 	ref array<ref DME_Tasks_ChoiceDef> Choices;
@@ -61,7 +63,9 @@ class DME_Tasks_QuestSyncEntry {
 		FailOnFactionChange = false;
 		TimeLimit = -1;
 		State = EDME_Tasks_QuestState.LOCKED;
-		LockReason = "";
+		LockReasonKey = "";
+		LockReasonP1 = "";
+		LockReasonP2 = "";
 		Objectives = new array<ref DME_Tasks_ObjectiveDef>();
 		Rewards = new DME_Tasks_RewardDef();
 		Choices = new array<ref DME_Tasks_ChoiceDef>();

@@ -93,11 +93,13 @@ class DME_Tasks_FactionService {
 		}
 
 		if (toFail.Count() > 0) {
-			engine.NotifyPlayer(uid, "Fraktion", "Fraktionswechsel zu " + newFaction + " — Fraktionsquests schlagen fehl", EDME_Tasks_NotificationType.WARNING);
+			//! p1 = Fraktions-Display-Key ('#'-Regel: der Client loest den Param nested auf)
+			string factionKey = DME_Tasks_EnumUtil.FactionDisplayKeyFromString(newFaction);
+			engine.NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_FACTION, DME_Tasks_LocKeys.NOTIF_FACTION_CHANGE_WARNING, EDME_Tasks_NotificationType.WARNING, factionKey);
 		}
 
 		foreach (string failQuestId : toFail) {
-			engine.FailQuest(uid, failQuestId, "Fraktion gewechselt");
+			engine.FailQuest(uid, failQuestId, DME_Tasks_LocKeys.NOTIF_REASON_FACTION_CHANGED);
 		}
 
 		//! §6.8 "+ Dirty": FailQuest markiert bereits je Quest; dieser Aufruf deckt den Fall ohne

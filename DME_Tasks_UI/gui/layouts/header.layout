@@ -96,7 +96,7 @@ FrameWidgetClass dme_tasks_header_root {
    vexactpos 0
    hexactsize 0
    vexactsize 1
-   text "REPUTATION"
+   text "#STR_DME_TASKS_MENU_HDR_REPUTATION"
    font "gui/fonts/metronbook16"
    "exact text" 1
    "exact text size" 13
@@ -126,7 +126,7 @@ FrameWidgetClass dme_tasks_header_root {
    vexactpos 0
    hexactsize 0
    vexactsize 1
-   text "LOYALITAETSSTUFE"
+   text "#STR_DME_TASKS_MENU_HDR_LOYALTY"
    font "gui/fonts/metronbook16"
    "exact text" 1
    "exact text size" 13
@@ -156,7 +156,7 @@ FrameWidgetClass dme_tasks_header_root {
    vexactpos 0
    hexactsize 0
    vexactsize 1
-   text "UMSATZ"
+   text "#STR_DME_TASKS_MENU_HDR_TURNOVER"
    font "gui/fonts/metronbook16"
    "exact text" 1
    "exact text size" 13

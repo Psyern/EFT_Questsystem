@@ -146,7 +146,7 @@ class DME_Tasks_QuestEngine {
 		}
 
 		foreach (string failQuestId : toFail) {
-			FailQuest(uid, failQuestId, "Du bist gestorben");
+			FailQuest(uid, failQuestId, DME_Tasks_LocKeys.NOTIF_REASON_DIED);
 		}
 	}
 
@@ -193,20 +193,22 @@ class DME_Tasks_QuestEngine {
 
 		DME_Tasks_QuestDef def = GetQuestDef(questId);
 		if (!def) {
-			NotifyPlayer(uid, "Quest", "Unbekannte Quest", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_QUEST, DME_Tasks_LocKeys.NOTIF_UNKNOWN_QUEST, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
 		if (FindActiveQuest(state, questId)) {
-			NotifyPlayer(uid, def.Title, "Quest ist bereits aktiv", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_ALREADY_ACTIVE, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
 		//! Deckt auch ab: nicht-repeatable bereits abgeschlossen, Cooldown, Unlock-Gating, alle Prereqs
 		DME_Tasks_PrereqEvaluator evaluator = DME_Tasks_PrereqEvaluator.GetInstance();
 		if (!evaluator.IsAvailable(uid, def)) {
-			string lockReason = evaluator.GetLockReason(uid, def);
-			NotifyPlayer(uid, def.Title, lockReason, EDME_Tasks_NotificationType.WARNING);
+			string lockP1;
+			string lockP2;
+			string lockKey = evaluator.GetLockReasonKey(uid, def, lockP1, lockP2);
+			NotifyPlayer(uid, def.Title, lockKey, EDME_Tasks_NotificationType.WARNING, lockP1, lockP2);
 			return;
 		}
 
@@ -243,7 +245,7 @@ class DME_Tasks_QuestEngine {
 		DME_Tasks_EngineEvents.s_DME_OnQuestActivated.Invoke(uid, questId);
 		DME_Tasks_RPC.SendQuestStateChanged(sender, questId, EDME_Tasks_QuestState.ACTIVE);
 		DME_Tasks_PlayerStore.GetInstance().MarkDirty(uid);
-		NotifyPlayer(uid, def.Title, "Quest angenommen", EDME_Tasks_NotificationType.SUCCESS);
+		NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_ACCEPTED, EDME_Tasks_NotificationType.SUCCESS);
 	}
 
 	void AbandonQuest(PlayerIdentity sender, string questId) {
@@ -257,7 +259,7 @@ class DME_Tasks_QuestEngine {
 		string uid = sender.GetId();
 		bool terminated = TerminateQuest(uid, questId, EDME_Tasks_QuestState.ABANDONED, "");
 		if (!terminated) {
-			NotifyPlayer(uid, "Quest", "Quest ist nicht aktiv", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_QUEST, DME_Tasks_LocKeys.NOTIF_NOT_ACTIVE, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
@@ -284,16 +286,16 @@ class DME_Tasks_QuestEngine {
 		string uid = sender.GetId();
 		DME_Tasks_ActiveQuest active = GetActiveQuest(uid, questId);
 		if (!active) {
-			NotifyPlayer(uid, "Quest", "Quest ist nicht aktiv", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_QUEST, DME_Tasks_LocKeys.NOTIF_NOT_ACTIVE, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
 		string title = GetQuestTitle(questId);
 		bool allDone = AreAllObjectivesDone(active);
 		if (active.State == EDME_Tasks_QuestState.READY_TO_TURN_IN && allDone) {
-			NotifyPlayer(uid, title, "Bereit zur Abgabe — Belohnung kann abgeholt werden", EDME_Tasks_NotificationType.SUCCESS);
+			NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_READY_TURNIN, EDME_Tasks_NotificationType.SUCCESS);
 		} else {
-			NotifyPlayer(uid, title, "Noch nicht alle Ziele erfuellt", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_OBJECTIVES_INCOMPLETE, EDME_Tasks_NotificationType.WARNING);
 		}
 	}
 
@@ -311,7 +313,7 @@ class DME_Tasks_QuestEngine {
 		string uid = sender.GetId();
 		DME_Tasks_ActiveQuest active = GetActiveQuest(uid, questId);
 		if (!active) {
-			NotifyPlayer(uid, "Quest", "Quest ist nicht aktiv", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_QUEST, DME_Tasks_LocKeys.NOTIF_NOT_ACTIVE, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
@@ -323,7 +325,7 @@ class DME_Tasks_QuestEngine {
 
 		DME_Tasks_ObjectiveProgress progress = FindObjectiveProgress(active, objectiveId);
 		if (!progress || progress.Done) {
-			NotifyPlayer(uid, GetQuestTitle(questId), "Nichts abzugeben", EDME_Tasks_NotificationType.INFO);
+			NotifyPlayer(uid, GetQuestTitle(questId), DME_Tasks_LocKeys.NOTIF_NOTHING_TO_HANDOVER, EDME_Tasks_NotificationType.INFO);
 			return;
 		}
 
@@ -346,12 +348,12 @@ class DME_Tasks_QuestEngine {
 
 		DME_Tasks_ActiveQuest active = FindActiveQuest(state, questId);
 		if (!active) {
-			NotifyPlayer(uid, "Quest", "Quest ist nicht aktiv", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_QUEST, DME_Tasks_LocKeys.NOTIF_NOT_ACTIVE, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
 		if (active.State != EDME_Tasks_QuestState.READY_TO_TURN_IN) {
-			NotifyPlayer(uid, GetQuestTitle(questId), "Quest ist noch nicht bereit zur Abgabe", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, GetQuestTitle(questId), DME_Tasks_LocKeys.NOTIF_NOT_READY, EDME_Tasks_NotificationType.WARNING);
 			return;
 		}
 
@@ -375,7 +377,7 @@ class DME_Tasks_QuestEngine {
 		//! Idempotente Auszahlung (TxRecord im RewardService); true = jetzt oder frueher vollstaendig ausgezahlt
 		bool claimed = DME_Tasks_RewardService.GetInstance().ClaimQuestReward(player, uid, def, choiceId);
 		if (!claimed) {
-			NotifyPlayer(uid, def.Title, "Belohnung konnte nicht ausgezahlt werden — bitte erneut versuchen", EDME_Tasks_NotificationType.ERROR);
+			NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_REWARD_FAILED, EDME_Tasks_NotificationType.ERROR);
 			return;
 		}
 
@@ -427,7 +429,7 @@ class DME_Tasks_QuestEngine {
 			}
 		}
 
-		NotifyPlayer(uid, def.Title, "Quest abgeschlossen — Belohnung erhalten", EDME_Tasks_NotificationType.SUCCESS);
+		NotifyPlayer(uid, def.Title, DME_Tasks_LocKeys.NOTIF_COMPLETED, EDME_Tasks_NotificationType.SUCCESS);
 
 		//! §6.2: Verfuegbarkeiten neu berechnen (Unlocks koennen neue Quests freischalten) — Full-Re-Sync
 		RequestSync(sender);
@@ -489,9 +491,9 @@ class DME_Tasks_QuestEngine {
 		bool replaced = DME_Tasks_TaskGenerator.GetInstance().ReplaceDaily(uid, questId);
 		if (replaced) {
 			RequestSync(sender);
-			NotifyPlayer(uid, "Tagesauftrag", "Auftrag ersetzt", EDME_Tasks_NotificationType.SUCCESS);
+			NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_DAILY, DME_Tasks_LocKeys.NOTIF_TASK_REPLACED, EDME_Tasks_NotificationType.SUCCESS);
 		} else {
-			NotifyPlayer(uid, "Tagesauftrag", "Ersetzen derzeit nicht moeglich", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, DME_Tasks_LocKeys.NOTIF_TITLE_DAILY, DME_Tasks_LocKeys.NOTIF_REPLACE_UNAVAILABLE, EDME_Tasks_NotificationType.WARNING);
 		}
 	}
 
@@ -593,7 +595,9 @@ class DME_Tasks_QuestEngine {
 		TerminateQuest(uid, questId, EDME_Tasks_QuestState.FAILED, reason);
 	}
 
-	void NotifyPlayer(string uid, string title, string message, int type) {
+	//! '#' rule: titleRaw/msgKey with a leading '#' are stringtable keys resolved on the client
+	//! (p1/p2/p3 fill %1/%2/%3); anything else is shown verbatim. Use DME_Tasks_LocKeys constants.
+	void NotifyPlayer(string uid, string titleRaw, string msgKey, int type, string p1 = "", string p2 = "", string p3 = "") {
 		if (!g_Game || !g_Game.IsDedicatedServer()) {
 			return;
 		}
@@ -602,7 +606,7 @@ class DME_Tasks_QuestEngine {
 		if (!identity) {
 			return;
 		}
-		DME_Tasks_RPC.SendNotification(identity, title, message, type);
+		DME_Tasks_RPC.SendNotification(identity, titleRaw, msgKey, p1, p2, p3, type);
 	}
 
 	//! Suche ueber die Online-Liste (g_Game.GetPlayers, verifiziert Game.c:947) — NIE Welt-Scan.
@@ -682,7 +686,7 @@ class DME_Tasks_QuestEngine {
 				if (identity) {
 					DME_Tasks_RPC.SendQuestStateChanged(identity, active.QuestId, EDME_Tasks_QuestState.READY_TO_TURN_IN);
 				}
-				NotifyPlayer(uid, GetQuestTitle(active.QuestId), "Alle Ziele erfuellt — Quest beim Haendler abgeben", EDME_Tasks_NotificationType.SUCCESS);
+				NotifyPlayer(uid, GetQuestTitle(active.QuestId), DME_Tasks_LocKeys.NOTIF_ALL_OBJECTIVES_DONE, EDME_Tasks_NotificationType.SUCCESS);
 			}
 		} else if (!allDone && active.State == EDME_Tasks_QuestState.READY_TO_TURN_IN) {
 			bool revertApplied = DME_Tasks_QuestLifecycle.ApplyState(active, EDME_Tasks_QuestState.ACTIVE);
@@ -723,15 +727,16 @@ class DME_Tasks_QuestEngine {
 
 		string title = GetQuestTitle(questId);
 		if (terminalState == EDME_Tasks_QuestState.FAILED) {
-			string failMessage = "Quest fehlgeschlagen";
+			//! reason ist ein LocKeys-Fail-Reason-Key ('#'-Regel: der Client loest ihn als %1 nested auf)
 			if (reason != "") {
-				failMessage = failMessage + ": " + reason;
+				NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_FAILED_REASON, EDME_Tasks_NotificationType.ERROR, reason);
+			} else {
+				NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_FAILED, EDME_Tasks_NotificationType.ERROR);
 			}
-			NotifyPlayer(uid, title, failMessage, EDME_Tasks_NotificationType.ERROR);
 		} else if (terminalState == EDME_Tasks_QuestState.EXPIRED) {
-			NotifyPlayer(uid, title, "Zeitlimit abgelaufen — Quest fehlgeschlagen", EDME_Tasks_NotificationType.WARNING);
+			NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_EXPIRED, EDME_Tasks_NotificationType.WARNING);
 		} else if (terminalState == EDME_Tasks_QuestState.ABANDONED) {
-			NotifyPlayer(uid, title, "Quest abgebrochen", EDME_Tasks_NotificationType.INFO);
+			NotifyPlayer(uid, title, DME_Tasks_LocKeys.NOTIF_ABANDONED, EDME_Tasks_NotificationType.INFO);
 		}
 
 		DME_Tasks_PlayerStore.GetInstance().MarkDirty(uid);
@@ -970,7 +975,11 @@ class DME_Tasks_QuestEngine {
 
 		entry.State = ComputeQuestStateFor(uid, state, def);
 		if (entry.State == EDME_Tasks_QuestState.LOCKED) {
-			entry.LockReason = DME_Tasks_PrereqEvaluator.GetInstance().GetLockReason(uid, def);
+			string lockP1;
+			string lockP2;
+			entry.LockReasonKey = DME_Tasks_PrereqEvaluator.GetInstance().GetLockReasonKey(uid, def, lockP1, lockP2);
+			entry.LockReasonP1 = lockP1;
+			entry.LockReasonP2 = lockP2;
 		}
 		return entry;
 	}

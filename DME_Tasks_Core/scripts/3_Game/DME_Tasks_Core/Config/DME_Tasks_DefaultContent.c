@@ -77,7 +77,7 @@ class DME_Tasks_DefaultContent {
 	private static DME_Tasks_TraderDef BuildQuartermaster() {
 		DME_Tasks_TraderDef def = new DME_Tasks_TraderDef();
 		def.TraderId = "west_quartermaster";
-		def.DisplayName = "Quartiermeister Rask";
+		def.DisplayName = "#STR_DME_TASKS_SEED_TRADER_WEST";
 		def.Faction = "WEST";
 
 		DME_Tasks_LoyaltyLevel level1 = new DME_Tasks_LoyaltyLevel();
@@ -113,8 +113,8 @@ class DME_Tasks_DefaultContent {
 		def.QuestId = "west_001";
 		def.TraderId = "west_quartermaster";
 		def.Category = "STORY";
-		def.Title = "Vorposten aufklaeren";
-		def.Description = "Rask braucht Augen im Westen: Finde das verlassene Militaerlager in den Bergen bei Myshkino und sieh dich dort um. (Zonen-Koordinaten sind Chernarus-Beispielwerte fuer das Myshkino-Militaerlager, ca. X 2035 / Z 7295 — vor Livegang an die eigene Karte anpassen.)";
+		def.Title = "#STR_DME_TASKS_SEED_W001_TITLE";
+		def.Description = "#STR_DME_TASKS_SEED_W001_DESC";
 
 		DME_Tasks_ObjectiveDef discover = new DME_Tasks_ObjectiveDef();
 		discover.ObjectiveId = "discover_camp";
@@ -135,8 +135,8 @@ class DME_Tasks_DefaultContent {
 		def.QuestId = "west_002";
 		def.TraderId = "west_quartermaster";
 		def.Category = "STORY";
-		def.Title = "Das Lager saeubern";
-		def.Description = "Das Lager wimmelt von Infizierten. Toete fuenf von ihnen innerhalb des Lagerbereichs — Kills ausserhalb der Zone zaehlen nicht.";
+		def.Title = "#STR_DME_TASKS_SEED_W002_TITLE";
+		def.Description = "#STR_DME_TASKS_SEED_W002_DESC";
 		def.Prerequisites.RequiredCompletedQuests.Insert("west_001");
 
 		DME_Tasks_ObjectiveDef kill = new DME_Tasks_ObjectiveDef();
@@ -160,8 +160,8 @@ class DME_Tasks_DefaultContent {
 		def.QuestId = "west_003";
 		def.TraderId = "west_quartermaster";
 		def.Category = "STORY";
-		def.Title = "Munition beschaffen";
-		def.Description = "Unsere Bestaende sind leer. Finde drei Munitionskisten (5,45x39) draussen in der Welt. Gekaufte, gecraftete oder als Belohnung erhaltene Kisten akzeptiere ich nicht.";
+		def.Title = "#STR_DME_TASKS_SEED_W003_TITLE";
+		def.Description = "#STR_DME_TASKS_SEED_W003_DESC";
 		def.Prerequisites.RequiredCompletedQuests.Insert("west_002");
 
 		DME_Tasks_ObjectiveDef collect = new DME_Tasks_ObjectiveDef();
@@ -185,8 +185,8 @@ class DME_Tasks_DefaultContent {
 		def.QuestId = "west_004";
 		def.TraderId = "west_quartermaster";
 		def.Category = "STORY";
-		def.Title = "Munition abliefern";
-		def.Description = "Bring mir die drei Munitionskisten. Teilabgaben nehme ich an — komm einfach wieder, sobald du den Rest hast. Kisten aus deinem Fund zaehlen sofort beim Annehmen des Auftrags.";
+		def.Title = "#STR_DME_TASKS_SEED_W004_TITLE";
+		def.Description = "#STR_DME_TASKS_SEED_W004_DESC";
 		def.Prerequisites.RequiredCompletedQuests.Insert("west_003");
 
 		DME_Tasks_ObjectiveDef collect = new DME_Tasks_ObjectiveDef();
@@ -218,8 +218,8 @@ class DME_Tasks_DefaultContent {
 		def.QuestId = "west_005";
 		def.TraderId = "west_quartermaster";
 		def.Category = "STORY";
-		def.Title = "Der Lagerkommandant";
-		def.Description = "Der Anfuehrer der Patrouille im Lager traegt Informationen bei sich, die ich brauche. Schalte ihn aus, such im Lager nach seinem GPS-Geraet und bring es mir als Beweis. (Ohne Boss-Mod zaehlt jeder Patrouillen-Infizierte als Kommandant — mit aktivem Boss-Adapter mappt Integrations/Bosses.json einen Klassennamen auf die BossId camp_commander.)";
+		def.Title = "#STR_DME_TASKS_SEED_W005_TITLE";
+		def.Description = "#STR_DME_TASKS_SEED_W005_DESC";
 		def.Prerequisites.MinimumTraderReputation = 0.05;
 		def.Prerequisites.RequiredCompletedQuests.Insert("west_004");
 
@@ -259,8 +259,8 @@ class DME_Tasks_DefaultContent {
 		def.QuestId = "west_006";
 		def.TraderId = "west_quartermaster";
 		def.Category = "STORY";
-		def.Title = "Ruestungsvertrag";
-		def.Description = "Du hast dich bewaehrt. Melde dich lebend bei mir, dann bekommst du eine AK-74 aus meinem Bestand — und ab sofort fuehre ich sie auch im Sortiment fuer dich.";
+		def.Title = "#STR_DME_TASKS_SEED_W006_TITLE";
+		def.Description = "#STR_DME_TASKS_SEED_W006_DESC";
 		def.Prerequisites.MinimumTraderReputation = 0.08;
 		def.Prerequisites.RequiredCompletedQuests.Insert("west_005");
 

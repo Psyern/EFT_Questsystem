@@ -277,7 +277,7 @@ class DME_Tasks_NotifierModule : CF_ModuleWorld {
 			return;
 		}
 
-		string message = "Belohnung erhalten";
+		string message = DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_RECEIVED);
 		if (json != "") {
 			DME_Tasks_RewardDef reward = new DME_Tasks_RewardDef();
 			bool parsed = DME_Tasks_Json<DME_Tasks_RewardDef>.FromJson(reward, json, "NotifierModule.OnRewardGranted");
@@ -289,7 +289,7 @@ class DME_Tasks_NotifierModule : CF_ModuleWorld {
 			}
 		}
 
-		DME_Tasks_Notifier.Show("BELOHNUNG", message, EDME_Tasks_NotificationType.SUCCESS);
+		DME_Tasks_Notifier.Show(DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_TITLE_REWARD), message, EDME_Tasks_NotificationType.SUCCESS);
 	}
 
 	//! Kompakte Zusammenfassung eines RewardDef ("+8500 XP, +45000 Rubel, ..."); "" wenn leer.
@@ -297,28 +297,29 @@ class DME_Tasks_NotifierModule : CF_ModuleWorld {
 		string summary = "";
 
 		if (reward.PlayerExperience > 0) {
-			summary = AppendPart(summary, "+" + reward.PlayerExperience.ToString() + " XP");
+			summary = AppendPart(summary, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_XP, reward.PlayerExperience.ToString()));
 		}
 		if (reward.Currency > 0) {
-			summary = AppendPart(summary, "+" + reward.Currency.ToString() + " Rubel");
+			summary = AppendPart(summary, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_RUBLES, reward.Currency.ToString()));
 		}
 		if (reward.TraderReputation > 0.0) {
-			summary = AppendPart(summary, "+" + reward.TraderReputation.ToString() + " Reputation");
+			string positiveRep = "+" + reward.TraderReputation.ToString();
+			summary = AppendPart(summary, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_REPUTATION, positiveRep));
 		}
 		if (reward.TraderReputation < 0.0) {
-			summary = AppendPart(summary, reward.TraderReputation.ToString() + " Reputation");
+			summary = AppendPart(summary, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_REPUTATION, reward.TraderReputation.ToString()));
 		}
 		if (reward.Items) {
 			int itemCount = reward.Items.Count();
 			if (itemCount > 0) {
-				summary = AppendPart(summary, "+" + itemCount.ToString() + " Gegenstaende");
+				summary = AppendPart(summary, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_ITEMS, itemCount.ToString()));
 			}
 		}
 		if (reward.SkillPoints > 0) {
-			summary = AppendPart(summary, "+" + reward.SkillPoints.ToString() + " Skillpunkte");
+			summary = AppendPart(summary, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_SKILLPOINTS, reward.SkillPoints.ToString()));
 		}
 		if (reward.SeasonXp > 0) {
-			summary = AppendPart(summary, "+" + reward.SeasonXp.ToString() + " Season-XP");
+			summary = AppendPart(summary, DME_Tasks_Loc.Resolve(DME_Tasks_LocKeys.NOTIF_REWARD_SEASON_XP, reward.SeasonXp.ToString()));
 		}
 
 		return summary;

@@ -85,8 +85,7 @@ class DME_Tasks_ExtractHandler : DME_Tasks_ObjectiveHandlerBase {
 		DME_Tasks_PlayerStore.GetInstance().MarkDirty(objectiveRef.PlayerUid);
 
 		int extractSeconds = GetExtractSeconds(objectiveRef.Def);
-		string message = "Extraktion laeuft (" + extractSeconds.ToString() + " s)";
-		engine.NotifyPlayer(objectiveRef.PlayerUid, GetQuestTitle(objectiveRef.QuestId), message, EDME_Tasks_NotificationType.PROGRESS);
+		engine.NotifyPlayer(objectiveRef.PlayerUid, GetQuestTitle(objectiveRef.QuestId), DME_Tasks_LocKeys.NOTIF_EXTRACT_RUNNING, EDME_Tasks_NotificationType.PROGRESS, extractSeconds.ToString());
 	}
 
 	private void HandleZoneLeave(DME_Tasks_ObjectiveRef objectiveRef, string zoneId) {
@@ -111,7 +110,7 @@ class DME_Tasks_ExtractHandler : DME_Tasks_ObjectiveHandlerBase {
 
 		session.ExtractStartedAt = -1;
 		DME_Tasks_PlayerStore.GetInstance().MarkDirty(objectiveRef.PlayerUid);
-		engine.NotifyPlayer(objectiveRef.PlayerUid, GetQuestTitle(objectiveRef.QuestId), "Extraktion abgebrochen — Extraktionszone verlassen", EDME_Tasks_NotificationType.WARNING);
+		engine.NotifyPlayer(objectiveRef.PlayerUid, GetQuestTitle(objectiveRef.QuestId), DME_Tasks_LocKeys.NOTIF_EXTRACT_ABORTED, EDME_Tasks_NotificationType.WARNING);
 	}
 
 	private void HandleTimerTick(DME_Tasks_ObjectiveRef objectiveRef, DME_Tasks_TimerEvent timerEvent) {
@@ -148,7 +147,7 @@ class DME_Tasks_ExtractHandler : DME_Tasks_ObjectiveHandlerBase {
 		//! Handler pflegt ExtractStartedAt; Extracted + MarkDirty macht der Service
 		session.ExtractStartedAt = -1;
 		DME_Tasks_ExpeditionService.GetInstance().OnExtracted(objectiveRef.PlayerUid, objectiveRef.QuestId);
-		engine.NotifyPlayer(objectiveRef.PlayerUid, GetQuestTitle(objectiveRef.QuestId), "Extraktion erfolgreich", EDME_Tasks_NotificationType.SUCCESS);
+		engine.NotifyPlayer(objectiveRef.PlayerUid, GetQuestTitle(objectiveRef.QuestId), DME_Tasks_LocKeys.NOTIF_EXTRACT_SUCCESS, EDME_Tasks_NotificationType.SUCCESS);
 
 		//! Voller Fortschritt: Required = max(1, Amount) = extractSeconds → Objective Done
 		ReportProgress(objectiveRef, extractSeconds);

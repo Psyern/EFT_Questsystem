@@ -411,11 +411,11 @@ class DME_Tasks_CoreModule : CF_ModuleWorld {
 			return;
 		}
 
-		Param3<string, string, int> data;
+		Param6<string, string, string, string, string, int> data;
 		if (!ctx.Read(data)) {
 			return;
 		}
 
-		DME_Tasks_ClientEvents.s_DME_OnNotification.Invoke(data.param1, data.param2, data.param3);
+		DME_Tasks_ClientEvents.s_DME_OnNotification.Invoke(data.param1, data.param2, data.param3, data.param4, data.param5, data.param6);
 	}
 }
