@@ -18,6 +18,10 @@ class CfgMods
 		author = "Psyern";
 		credits = "Psyern, Deadmans Echo Community";
 		version = "1.0.0";
+		//! CF ModStorage: item origin metadata is stored through CF (NOT raw ctx writes).
+		//! ModStorage only registers a context while this is > 0 — do not remove or rename
+		//! this CfgMods class, or all stored origin data is lost.
+		storageVersion = 1;
 		dependencies[] = {"World"};
 		class defs
 		{

@@ -1,11 +1,15 @@
-//! Origin-Metadaten am Item (CONTRACTS §6.3 + §6.5, Agent 10) — modded ItemBase mit Persistenz.
-//! BEWUSST KEIN CF_ModStorage (braucht CF_MODSTORAGE-Define) — plain OnStoreSave/OnStoreLoad-Muster:
-//! super ZUERST, dann eigene Versions-int, dann Felder in FESTER Reihenfolge; beim Load jeden Read pruefen.
+//! Item origin metadata (CONTRACTS §6.3 + §6.5) — modded ItemBase, persisted via CF ModStorage.
 //!
-//! Legacy-Save-Schutz: Items, die VOR Installation dieses Mods gespeichert wurden, enthalten unsere
-//! Felder nicht. Schlaegt bereits der Versions-Read fehl, wird das als Alt-Stand behandelt (Defaults
-//! bleiben, return true) — sonst wuerde der erste Serverstart nach Installation alle Items loeschen.
-//! Schlaegt ein SPAETERER Read fehl, ist der Stream wirklich korrupt -> return false.
+//! MUST use CF_OnStoreSave/CF_OnStoreLoad, NEVER raw OnStoreSave/OnStoreLoad with ctx.Write/ctx.Read.
+//! Raw appends to the entity stream are unsafe here: CF itself writes its ModStorage blob into that
+//! same stream (CF ItemBase.c: super.OnStoreSave(ctx) then m_CF_ModStorage.OnStoreSave(ctx)). On an
+//! item saved BEFORE this mod was installed, a raw ctx.Read() does NOT fail — it happily consumes
+//! CF's bytes, desyncing the stream. Every later read then returns garbage (observed: a shotgun
+//! loading "muzzle index 536886856"), which throws VM exceptions and crash-loops the server.
+//!
+//! CF ModStorage solves this by construction: storage.Get(MOD_NAME) returns null for items that
+//! predate the mod, so legacy saves simply keep the defaults. Requires storageVersion > 0 in the
+//! CfgMods class of this PBO (see config.cpp) — the key below MUST match that class name.
 //!
 //! WICHTIG (Chain-Regel): Dieses PBO enthaelt ZWEI modded-Deklarationen von ItemBase (diese Datei +
 //! DME_Tasks_ItemHook.c). Jede Deklaration ist SELBSTAENDIG — Zugriff auf die hier deklarierten
@@ -13,8 +17,8 @@
 //! DME_Tasks_QuestItemHelper, ...), nie quer zwischen den beiden modded-Deklarationen
 //! (Muster wie DayZExpansion_Vehicles ItemBase.c + ItemBase_Towing.c).
 modded class ItemBase {
-	private static const int DME_TASKS_ORIGIN_STORE_VERSION = 1;
-	private static bool s_DME_Tasks_LegacyStoreLogged = false;
+	//! MUST match the CfgMods class name of this PBO (config.cpp), or the context is never found.
+	private static const string DME_TASKS_STORAGE_MOD = "DME_Tasks_Objectives";
 
 	//! EDME_Tasks_OriginType — UNKNOWN = noch nie gestempelt
 	int m_DME_OriginType;
@@ -93,10 +97,14 @@ modded class ItemBase {
 	// Persistenz (§6.3-Muster)
 	// ==================================================================
 
-	override void OnStoreSave(ParamsWriteContext ctx) {
-		super.OnStoreSave(ctx);
+	override void CF_OnStoreSave(CF_ModStorageMap storage) {
+		super.CF_OnStoreSave(storage);
 
-		ctx.Write(DME_TASKS_ORIGIN_STORE_VERSION);
+		CF_ModStorage ctx = storage.Get(DME_TASKS_STORAGE_MOD);
+		if (!ctx) {
+			return;
+		}
+
 		ctx.Write(m_DME_OriginType);
 		ctx.Write(m_DME_OriginEventId);
 		ctx.Write(m_DME_FirstOwner);
@@ -105,18 +113,15 @@ modded class ItemBase {
 		ctx.Write(m_DME_Transferred);
 	}
 
-	override bool OnStoreLoad(ParamsReadContext ctx, int version) {
-		if (!super.OnStoreLoad(ctx, version)) {
+	override bool CF_OnStoreLoad(CF_ModStorageMap storage) {
+		if (!super.CF_OnStoreLoad(storage)) {
 			return false;
 		}
 
-		int storeVersion;
-		if (!ctx.Read(storeVersion)) {
-			//! Alt-Save ohne unsere Daten (Erststart nach Installation) — Defaults behalten
-			if (!s_DME_Tasks_LegacyStoreLogged) {
-				s_DME_Tasks_LegacyStoreLogged = true;
-				DME_Tasks_Log.Info("ItemBase.OnStoreLoad: Alt-Save ohne Origin-Daten erkannt — Defaults werden verwendet (einmalige Meldung)");
-			}
+		CF_ModStorage ctx = storage.Get(DME_TASKS_STORAGE_MOD);
+		if (!ctx) {
+			//! Item was saved before this mod existed — keep the defaults. No stream is consumed,
+			//! so nothing downstream can desync. This is exactly what the old raw reader got wrong.
 			return true;
 		}
 
@@ -139,7 +144,8 @@ modded class ItemBase {
 			return false;
 		}
 
-		//! Versions-Guard fuer kuenftige Felder: NUR lesen, wenn storeVersion >= 2 (ans Ende anfuegen!)
+		//! Future fields: append at the END and guard with `if (ctx.GetVersion() >= 2)`,
+		//! bumping storageVersion in config.cpp.
 
 		return true;
 	}
