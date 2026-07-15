@@ -19,10 +19,12 @@ eingebunden, wenn vorhanden): Expansion **Market**, Expansion **Hardline** (für
 sie werden nur bei Anwesenheit einkompiliert, der Mod läuft auch ohne sie).
 
 ## Was der Mod tut
-1. **UI-Reskin:** `modded ExpansionQuestMenu.GetLayoutFile()` lenkt Menü, Listeneintrag und HUD-Objective auf
-   eigene Layouts unter `GUI/layouts/dme_eq/` (1:1-Kopien der Expansion-Layouts, auf Gunmetal-Theme umgefärbt —
-   **alle** Widgetnamen/Bindings erhalten, Controller unverändert → kein Absturz). Grundlage für weiteres
-   In-Game-Restyling.
+1. **UI-Reskin (lizenz-sauber):** DayZ-Expansion steht unter **CC BY-NC-ND** (NoDerivatives) — es werden
+   **keine** Expansion-Layouts kopiert oder weiterverbreitet. Stattdessen färbt `modded ExpansionQuestMenu.OnShow`
+   die vorhandenen Stock-Widgets zur Laufzeit auf unsere EFT/Tarkov-Palette um (Panels Gunmetal, Aktions-Buttons
+   Messing) — nur über die auto-gebundenen Member der Basis, null-sicher. Vollflächige eigene Layouts (DME_Tasks-Stil)
+   sind eine spätere In-Game-Iterationsarbeit (Expansions Menü erwartet ~35 typisierte Widgets per MVC-Auto-Binding;
+   ein eigenes Layout muss dieses Skelett vollständig treffen).
 2. **Loyalitätsstufen:** aus **Hardline-Reputation + abgeschlossenen Quests** zur Laufzeit berechnet (keine
    eigene Spieler-Persistenz). Konfiguriert in `$profile:DME_ExpansionQuestEFT/LoyaltyConfig.json`.
 3. **Quest-Gating:** `modded MissionBaseWorld.Expansion_CanStartQuest` (hartes Start-Gate) +
@@ -64,8 +66,9 @@ Sie werden kaufbar, sobald der Spieler eine Stufe erreicht, die sie freischaltet
   Für client-seitige Vorschau müsste die Loyalty-Config zum Client gesynct werden (v2).
 - **Loyalitätsstufe im Trader-Header** wird v1 nicht separat angezeigt (nur die vorhandene Expansion-
   Reputationsanzeige); dafür wäre ebenfalls Client-Sync nötig (v2).
-- Die Layouts sind farblich umgethemed, aber das volle EFT-Feintuning (Positionen, Chrome, Fortschrittsbalken)
-  ist In-Game-Iterationsarbeit.
+- Der Reskin ist v1 nur eine **Laufzeit-Umfärbung** der Stock-UI (Palette). Volles EFT-Layout (Positionen,
+  Chrome, Fortschrittsbalken) = eigenes, von Grund auf geschriebenes Layout, das Expansions ~35-Widget-Vertrag
+  trifft — In-Game-Iterationsarbeit, bewusst nicht als (lizenzpflichtige) Layout-Kopie umgesetzt.
 
 ## Installation Kurzfassung
 1. `LoyaltyConfig.json` aus `_ServerProfile_Example/DME_ExpansionQuestEFT/` nach
