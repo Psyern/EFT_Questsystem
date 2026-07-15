@@ -335,7 +335,7 @@ const CATEGORY_COLOR = {STORY:"#C9A227",SIDE:"#4AA8E0",FACTION:"#D94A4A",BOSS:"#
 const OBJ_TYPES = ["KILL","BOSS","COLLECT","HANDOVER","DELIVER","TRAVEL","DISCOVER","MARK","STASH","INTERACT","SURVIVE","RETURN_TO_TRADER","CRAFT","ESCORT","DEFEND","USE_ITEM","SIGNAL","GROUP","EXTRACT"];
 const OBJ_COLOR = {KILL:"#E5484D",BOSS:"#F76808",COLLECT:"#3DD68C",HANDOVER:"#E0982E",DELIVER:"#E0982E",TRAVEL:"#4AA8E0",DISCOVER:"#2BC4C4",MARK:"#8B7BE8",STASH:"#8B7BE8",INTERACT:"#C9A227",SURVIVE:"#D08770",RETURN_TO_TRADER:"#B48EAD",CRAFT:"#A3BE8C",ESCORT:"#F0A868",DEFEND:"#F0A868",USE_ITEM:"#C9A227",SIGNAL:"#56B6C2",GROUP:"#7A8290",EXTRACT:"#66C2A5"};
 const TARGET_CATS = ["","INFECTED","PLAYER","ANIMAL","AI"];
-const STORE_KEY = "dme_quest_editor_v1";
+const STORE_KEY = "dme_quest_editor_v2";
 
 // which extra fields each objective type surfaces (beyond Id/Type/Amount)
 const OBJ_FIELDS = {
@@ -1166,29 +1166,75 @@ $("#btnClear").onclick=()=>{ if(confirm("Alle Trader und Quests löschen? (nur d
    SEED (first run) + INIT
    ===================================================================== */
 function seedDemo(){
-  const t1=newTraderDef(); t1.id="west_quartermaster"; t1.DisplayName="Quartiermeister Rask"; t1.Faction="WEST";
-  t1.LoyaltyLevels=[{Level:1,RequiredPlayerLevel:0,RequiredReputation:0,RequiredTurnover:0},{Level:2,RequiredPlayerLevel:10,RequiredReputation:0.2,RequiredTurnover:250000}];
-  t1.__k="trader"; t1._x=0; t1._y=0;
-  const t2=newTraderDef(); t2.id="hacker_dima"; t2.DisplayName="Dima der Hacker"; t2.Faction="NEUTRAL";
-  t2.__k="trader"; t2._x=320; t2._y=0;
-  const q1=newQuestDef(); q1.QuestId="west_001"; q1.TraderId="west_quartermaster"; q1.Category="STORY";
-  q1.Title="Willkommen im Feld"; q1.Description="Erkunde das alte Militärlager im Westen.";
-  q1.Objectives=[Object.assign(newObjective("DISCOVER"),{ObjectiveId:"discover_camp",Zone:{ZoneId:"mil_camp_west",CenterX:2035,CenterY:290,CenterZ:7295,Radius:150,Height:120}})];
-  q1.Rewards.PlayerExperience=1500; q1.Rewards.Currency=5000; q1.Rewards.TraderReputation=0.02; q1.__k="quest"; q1._x=0; q1._y=170;
-  const q2=newQuestDef(); q2.QuestId="west_002"; q2.TraderId="west_quartermaster"; q2.Category="STORY";
-  q2.Title="Säubere das Lager"; q2.Description="Erledige die Infizierten in der Zone.";
-  q2.Prerequisites.RequiredCompletedQuests=["west_001"];
-  q2.Objectives=[Object.assign(newObjective("KILL"),{ObjectiveId:"kill_infected",Amount:5,TargetCategory:"INFECTED"})];
-  q2.Rewards.PlayerExperience=2500; q2.Rewards.Currency=7500; q2.__k="quest"; q2._x=0; q2._y=380;
-  const q3=newQuestDef(); q3.QuestId="west_003"; q3.TraderId="west_quartermaster"; q3.Category="STORY";
-  q3.Title="Melde dich zurück"; q3.Prerequisites.RequiredCompletedQuests=["west_002"];
-  q3.Objectives=[Object.assign(newObjective("RETURN_TO_TRADER"),{ObjectiveId:"report",TraderId:"west_quartermaster",MustBeAlive:true})];
-  q3.Rewards.PlayerExperience=4000; q3.Rewards.Currency=12000; q3.__k="quest"; q3._x=0; q3._y=590;
-  state.traders=[t1,t2]; state.quests=[q1,q2,q3];
+  //! Beispiel-Content — 3 feste Questgeber (West / Ost / Handelsverband). Frei editierbar.
+  function mkTrader(id,name,fac){ const t=newTraderDef(); t.id=id; t.DisplayName=name; t.Faction=fac;
+    t.LoyaltyLevels=[{Level:1,RequiredPlayerLevel:0,RequiredReputation:0,RequiredTurnover:0},
+                     {Level:2,RequiredPlayerLevel:10,RequiredReputation:0.2,RequiredTurnover:250000},
+                     {Level:3,RequiredPlayerLevel:20,RequiredReputation:0.45,RequiredTurnover:1000000}];
+    t.__k="trader"; t._x=0; t._y=0; return t; }
+  function mkZone(zid,cx,cy,cz,r){ return {ZoneId:zid,CenterX:cx,CenterY:cy,CenterZ:cz,Radius:r,Height:120}; }
+  function mkObj(type,id,extra){ const o=Object.assign(newObjective(type),{ObjectiveId:id},extra||{});
+    if(!(extra&&("Zone" in extra))) delete o.Zone; return o; }
+  function mkQuest(id,trader,cat,title,desc,prereqs,objs,xp,cur,rep,repeatable){ const q=newQuestDef();
+    q.QuestId=id; q.TraderId=trader; q.Category=cat; q.Title=title; q.Description=desc;
+    if(prereqs&&prereqs.length) q.Prerequisites.RequiredCompletedQuests=prereqs;
+    q.Objectives=objs; q.Rewards.PlayerExperience=xp; q.Rewards.Currency=cur; q.Rewards.TraderReputation=rep;
+    if(repeatable) q.Repeatable=true; q.__k="quest"; q._x=0; q._y=0; return q; }
+
+  state.traders=[
+    mkTrader("west_command","Quartiermeister Rask","WEST"),
+    mkTrader("east_command","Major Sokolow","EAST"),
+    mkTrader("union_broker","Händler Dima","TRADE_UNION")
+  ];
+  state.quests=[
+    mkQuest("west_001","west_command","STORY","Willkommen im Feld",
+      "Erkunde das verlassene Militärlager im Westen.",
+      [], [mkObj("DISCOVER","discover_camp",{Zone:mkZone("mil_camp_west",2035,290,7295,150)})],
+      1500,5000,0.02),
+    mkQuest("west_002","west_command","STORY","Säubere das Lager",
+      "Das Lager wimmelt von Infizierten. Räum es aus.",
+      ["west_001"], [mkObj("KILL","kill_infected",{Amount:5,TargetCategory:"INFECTED",Zone:mkZone("mil_camp_west",2035,290,7295,150),RequiredZones:["mil_camp_west"]})],
+      2500,7500,0.02),
+    mkQuest("west_003","west_command","STORY","Beweise sichern",
+      "Sammle drei Munitionskisten aus dem Lager und liefere sie ab.",
+      ["west_002"], [mkObj("COLLECT","collect_ammo",{Amount:3,ClassNames:["AmmoBox_545x39_20Rnd"],FoundInWorldRequired:true}),
+                     mkObj("HANDOVER","handover_ammo",{Amount:3,ReferencesObjective:"collect_ammo"})],
+      3000,10000,0.03),
+    mkQuest("west_004","west_command","FACTION","Anerkennung des Westens",
+      "Beweise deine Treue: Schalte eine feindliche Patrouille aus und melde dich zurück.",
+      ["west_003"], [mkObj("KILL","kill_patrol",{Amount:5,TargetCategory:"AI"}),
+                     mkObj("RETURN_TO_TRADER","report_west",{TraderId:"west_command",MustBeAlive:true})],
+      5000,20000,0.05),
+    mkQuest("east_001","east_command","STORY","Grenzkontrolle",
+      "Erreiche den östlichen Kontrollpunkt und sichere ihn.",
+      [], [mkObj("TRAVEL","travel_checkpoint",{Zone:mkZone("east_checkpoint",13805,37,3120,60)})],
+      1200,4000,0.02),
+    mkQuest("east_002","east_command","STORY","Der Informant",
+      "Geleite den Informanten sicher zum Treffpunkt.",
+      ["east_001"], [mkObj("ESCORT","escort_informant",{Zone:mkZone("east_meet",166,427,10420,40)})],
+      3500,12000,0.03),
+    mkQuest("east_003","east_command","FACTION","Anerkennung des Ostens",
+      "Eine feindliche Gruppe ist eingedrungen. Fang sie ab und berichte.",
+      ["east_002"], [mkObj("KILL","kill_intruders",{Amount:6,TargetCategory:"AI"}),
+                     mkObj("RETURN_TO_TRADER","report_east",{TraderId:"east_command",MustBeAlive:true})],
+      5000,20000,0.05),
+    mkQuest("union_001","union_broker","SIDE","Die Mutation",
+      "Ein mutierter Bär treibt im Nordwesten sein Unwesen. Erlege die Bestie.",
+      [], [mkObj("KILL","kill_bear",{Amount:1,ClassNames:["Animal_UrsusArctos"],Zone:mkZone("bear_zone",1563,452,14070,300),RequiredZones:["bear_zone"]})],
+      2000,8000,0.02),
+    mkQuest("union_002","union_broker","SIDE","Vergrabener Schatz",
+      "Alte Koordinaten führen zu einem Versteck. Finde die markierte Stelle.",
+      [], [mkObj("DISCOVER","find_stash",{Zone:mkZone("stash_zone",6478,312,11050,10)})],
+      1800,6000,0.02),
+    mkQuest("union_003","union_broker","DAILY","Tägliche Beute",
+      "Besorge zwei Goldbarren und liefere sie beim Handelsverband ab.",
+      [], [mkObj("COLLECT","collect_gold",{Amount:2,ClassNames:["ExpansionGoldBar"]}),
+           mkObj("HANDOVER","handover_gold",{Amount:2,ReferencesObjective:"collect_gold"})],
+      1500,5000,0.02,true)
+  ];
 }
 
-function init(){ if(!load()){ seedDemo(); } renderAll(); applyView();
-  // welcome
+function init(){ if(!load()){ seedDemo(); autoLayout(); } else { renderAll(); } applyView();
   setTimeout(()=>{ if(!localStorage.getItem(STORE_KEY+"_seen")){ toast('Willkommen im <span class="mono">DME Quest Editor</span> — <b>?</b> für Hilfe'); localStorage.setItem(STORE_KEY+"_seen","1"); } },400);
 }
 init();
