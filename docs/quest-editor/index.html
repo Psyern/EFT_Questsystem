@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DME Quest Editor</title>
+<style>
+:root{
+  --bg:#0E1013; --panel:#16191E; --panel-2:#1D2127; --panel-3:#23272F;
+  --line:#2A2F37; --line-2:#363C46;
+  --ink:#D6D3CB; --muted:#8A8F98; --faint:#5B616B;
+  --brass:#C9A227; --brass-dim:#8f7419;
+  --err:#E5484D; --warn:#E0982E; --ok:#3DD68C;
+  --shadow:0 8px 24px rgba(0,0,0,.45);
+  --mono:ui-monospace,"Cascadia Code","Cascadia Mono",Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--sans);
+  font-size:13px; overflow:hidden; user-select:none; -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;font-size:10px;color:var(--muted)}
+
+/* ---------- Layout ---------- */
+#app{display:flex;flex-direction:column;height:100%}
+#toolbar{
+  display:flex;align-items:center;gap:6px;height:46px;padding:0 12px;flex:0 0 auto;
+  background:linear-gradient(180deg,#181B21,#131519);border-bottom:1px solid var(--line);z-index:30;
+}
+#brand{display:flex;align-items:center;gap:9px;margin-right:6px}
+#brand .logo{width:22px;height:22px;border:1px solid var(--brass);color:var(--brass);
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;
+  font-size:12px;transform:skewX(-8deg);background:rgba(201,162,39,.06)}
+#brand .title{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600}
+#brand .title b{color:var(--brass);font-weight:600}
+.tb-sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.tb-btn{
+  height:30px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+  border-radius:4px;font-size:12px;white-space:nowrap;transition:border-color .12s,background .12s;
+}
+.tb-btn:hover{border-color:var(--line-2);background:var(--panel-3)}
+.tb-btn.primary{border-color:var(--brass-dim);color:var(--brass);background:rgba(201,162,39,.08)}
+.tb-btn.primary:hover{background:rgba(201,162,39,.15)}
+.tb-btn.danger:hover{border-color:var(--err);color:var(--err)}
+.tb-btn .k{font-family:var(--mono);font-size:10px;color:var(--faint);border:1px solid var(--line);
+  border-radius:3px;padding:0 4px;margin-left:2px}
+.tb-spacer{flex:1 1 auto}
+#zoomLabel{font-family:var(--mono);font-size:11px;color:var(--muted);min-width:44px;text-align:right}
+
+#stage{flex:1 1 auto;display:flex;min-height:0;position:relative}
+
+/* ---------- Canvas ---------- */
+#canvas{
+  flex:1 1 auto;position:relative;overflow:hidden;cursor:default;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,.045) 1px, transparent 0),
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,.02) 1px, transparent 0);
+  background-size:26px 26px, 130px 130px;
+}
+#canvas.panning{cursor:grabbing}
+#canvas.connecting{cursor:crosshair}
+#world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#edges{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none}
+#edges path.hit{stroke:transparent;stroke-width:14;fill:none;pointer-events:stroke;cursor:pointer}
+#edges path.wire{fill:none;stroke-width:2}
+#edges .elabel{font-family:var(--mono);font-size:9px;fill:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+#edges .elabel-bg{fill:var(--bg);opacity:.85}
+
+/* ---------- Nodes ---------- */
+.node{
+  position:absolute;width:248px;background:var(--panel);border:1px solid var(--line);
+  border-radius:7px;box-shadow:var(--shadow);overflow:visible;
+}
+.node.sel{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass),0 8px 26px rgba(0,0,0,.5)}
+.node .accent{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:7px 0 0 7px}
+.node .nhead{display:flex;align-items:center;gap:7px;padding:9px 10px 8px 13px;cursor:grab}
+.node .nhead:active{cursor:grabbing}
+.node .ntag{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;
+  padding:2px 5px;border-radius:3px;border:1px solid;flex:0 0 auto}
+.node .ntitle{font-size:13px;font-weight:600;line-height:1.2;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;flex:1 1 auto}
+.node .nid{font-family:var(--mono);font-size:10px;color:var(--faint);padding:0 13px 7px}
+.node .nbadges{display:flex;flex-wrap:wrap;gap:4px;padding:0 11px 9px 13px}
+.node .badge{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 5px;border-radius:3px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
+.node .obj-list{border-top:1px solid var(--line);padding:6px 8px 8px}
+.node .obj-row{display:flex;align-items:center;gap:6px;padding:3px 5px;border-radius:4px;font-size:11px}
+.node .obj-row:hover{background:var(--panel-2)}
+.node .obj-dot{width:7px;height:7px;border-radius:2px;flex:0 0 auto}
+.node .obj-type{font-family:var(--mono);font-size:9px;letter-spacing:.05em;min-width:64px;color:var(--muted)}
+.node .obj-txt{color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.node .nfoot{display:flex;justify-content:space-between;align-items:center;padding:6px 11px 8px 13px;
+  border-top:1px solid var(--line);font-family:var(--mono);font-size:10px;color:var(--faint)}
+.node .flags-badge{color:var(--err);cursor:help}
+.node .flags-badge.warn{color:var(--warn)}
+.node.empty-obj .obj-empty{padding:8px 13px;color:var(--faint);font-style:italic;font-size:11px;border-top:1px solid var(--line)}
+
+/* Ports */
+.port{position:absolute;width:13px;height:13px;border-radius:50%;background:var(--panel-3);
+  border:2px solid var(--line-2);cursor:crosshair;z-index:2;transition:transform .1s,border-color .1s}
+.port:hover{border-color:var(--brass);transform:scale(1.25)}
+.port.out-trader{right:-7px;top:16px;border-color:#4A90D9}
+.port.out-prereq{bottom:-7px;left:50%;margin-left:-6px;border-color:var(--brass)}
+.port .plabel{position:absolute;font-family:var(--mono);font-size:8px;color:var(--faint);
+  text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;pointer-events:none}
+.port.out-trader .plabel{left:16px;top:0}
+.port.out-prereq .plabel{top:14px;left:-6px}
+
+/* ---------- Inspector ---------- */
+#inspector{
+  flex:0 0 340px;width:340px;background:var(--panel);border-left:1px solid var(--line);
+  display:flex;flex-direction:column;min-height:0;z-index:20;
+}
+#inspector.hidden{display:none}
+#insp-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+#insp-head .h-tag{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
+#insp-head .h-title{font-size:15px;font-weight:600;margin-top:3px;word-break:break-word}
+#insp-head .h-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px}
+#insp-close{background:none;border:none;color:var(--muted);font-size:18px;line-height:1;padding:2px 4px}
+#insp-close:hover{color:var(--err)}
+#insp-body{flex:1 1 auto;overflow-y:auto;overflow-x:hidden}
+#insp-empty{padding:40px 22px;text-align:center;color:var(--faint)}
+#insp-empty .big{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;color:var(--muted)}
+
+.sect{border-bottom:1px solid var(--line)}
+.sect>.sect-head{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;user-select:none}
+.sect>.sect-head:hover{background:var(--panel-2)}
+.sect>.sect-head .chev{color:var(--faint);font-size:10px;width:10px;transition:transform .12s}
+.sect.open>.sect-head .chev{transform:rotate(90deg)}
+.sect>.sect-head .s-name{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);flex:1 1 auto}
+.sect>.sect-head .s-count{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.sect>.sect-body{display:none;padding:4px 14px 14px}
+.sect.open>.sect-body{display:block}
+
+.f{margin:9px 0}
+.f>label{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.f .hint{font-family:var(--sans);font-size:10px;color:var(--faint);margin-top:3px;text-transform:none;letter-spacing:0}
+.ctrl{width:100%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);
+  border-radius:4px;padding:7px 8px;font-size:12px}
+.ctrl:focus{outline:none;border-color:var(--brass)}
+textarea.ctrl{resize:vertical;min-height:52px;line-height:1.4}
+select.ctrl{cursor:pointer}
+.row2{display:flex;gap:8px}
+.row2>.f{flex:1;margin:9px 0}
+.chk{display:flex;align-items:center;gap:8px;margin:7px 0;cursor:pointer;font-size:12px}
+.chk input{width:15px;height:15px;accent-color:var(--brass);cursor:pointer}
+.mini-btn{background:var(--panel-2);border:1px solid var(--line);color:var(--muted);border-radius:4px;
+  padding:5px 9px;font-size:11px;font-family:var(--mono)}
+.mini-btn:hover{border-color:var(--brass);color:var(--brass)}
+.add-btn{width:100%;margin-top:8px;padding:7px;background:var(--panel-2);border:1px dashed var(--line-2);
+  color:var(--muted);border-radius:4px;font-family:var(--mono);font-size:11px;letter-spacing:.06em}
+.add-btn:hover{border-color:var(--brass);color:var(--brass)}
+
+/* repeatable item cards (objectives / rewards / levels) */
+.item-card{background:var(--panel-2);border:1px solid var(--line);border-radius:5px;margin:8px 0;overflow:hidden}
+.item-card>.ic-head{display:flex;align-items:center;gap:7px;padding:7px 9px;background:var(--panel-3)}
+.item-card>.ic-head .ic-dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.item-card>.ic-head .ic-name{font-family:var(--mono);font-size:11px;flex:1 1 auto;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item-card>.ic-head .ic-x{background:none;border:none;color:var(--faint);font-size:15px;line-height:1;padding:0 3px}
+.item-card>.ic-head .ic-x:hover{color:var(--err)}
+.item-card>.ic-body{padding:2px 10px 9px}
+.taglist{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.taglist .tag{display:inline-flex;align-items:center;gap:5px;background:var(--panel-3);border:1px solid var(--line);
+  border-radius:4px;padding:3px 4px 3px 7px;font-family:var(--mono);font-size:10px}
+.taglist .tag button{background:none;border:none;color:var(--faint);font-size:13px;line-height:1;padding:0 1px}
+.taglist .tag button:hover{color:var(--err)}
+.taglist .tag.add input{background:none;border:none;color:var(--ink);width:96px;font-family:var(--mono);font-size:10px}
+.taglist .tag.add input:focus{outline:none}
+.taglist .tag.add{border-style:dashed}
+
+/* ---------- Validation panel ---------- */
+#valpanel{position:absolute;right:352px;bottom:12px;width:300px;max-height:44%;background:var(--panel);
+  border:1px solid var(--line);border-radius:7px;box-shadow:var(--shadow);display:flex;flex-direction:column;z-index:25;overflow:hidden}
+#valpanel.hidden{display:none}
+#valpanel .vp-head{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+#valpanel .vp-head .s-name{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;flex:1 1 auto}
+#valpanel .vp-body{overflow-y:auto;padding:4px 0}
+#valpanel .vitem{display:flex;gap:8px;padding:7px 12px;font-size:11px;border-left:2px solid transparent;cursor:pointer}
+#valpanel .vitem:hover{background:var(--panel-2)}
+#valpanel .vitem.err{border-left-color:var(--err)}
+#valpanel .vitem.warn{border-left-color:var(--warn)}
+#valpanel .vitem .vmark{font-family:var(--mono);font-size:9px;flex:0 0 auto;margin-top:1px}
+#valpanel .vitem.err .vmark{color:var(--err)}
+#valpanel .vitem.warn .vmark{color:var(--warn)}
+#valpanel .vitem .vwho{color:var(--muted);font-family:var(--mono);font-size:9px}
+#valpanel .vp-empty{padding:16px 12px;color:var(--ok);font-size:11px;text-align:center}
+.count-pill{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:9px;border:1px solid var(--line)}
+.count-pill.err{color:var(--err);border-color:rgba(229,72,77,.4)}
+.count-pill.warn{color:var(--warn);border-color:rgba(224,152,46,.4)}
+.count-pill.ok{color:var(--ok);border-color:rgba(61,214,140,.4)}
+
+/* ---------- Context menu ---------- */
+#ctxmenu{position:absolute;z-index:60;background:var(--panel-2);border:1px solid var(--line-2);
+  border-radius:6px;box-shadow:var(--shadow);padding:4px;min-width:170px;display:none}
+#ctxmenu button{display:flex;width:100%;align-items:center;gap:8px;background:none;border:none;
+  color:var(--ink);text-align:left;padding:7px 10px;border-radius:4px;font-size:12px}
+#ctxmenu button:hover{background:var(--panel-3)}
+#ctxmenu button.danger:hover{color:var(--err)}
+#ctxmenu .sep{height:1px;background:var(--line);margin:4px 2px}
+#ctxmenu .ctx-h{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:5px 10px 3px}
+
+/* ---------- Modal ---------- */
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:70;display:none;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line-2);border-radius:9px;box-shadow:var(--shadow);
+  width:min(680px,92vw);max-height:86vh;display:flex;flex-direction:column;overflow:hidden}
+.modal .m-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line)}
+.modal .m-head h2{margin:0;font-family:var(--mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.modal .m-head button{background:none;border:none;color:var(--muted);font-size:20px;line-height:1}
+.modal .m-head button:hover{color:var(--err)}
+.modal .m-body{padding:16px;overflow:auto}
+.modal .m-body pre{margin:0;font-family:var(--mono);font-size:11px;line-height:1.5;white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+.kb-grid{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;align-items:center}
+.kb-grid .k{font-family:var(--mono);font-size:11px;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:4px;padding:3px 7px;justify-self:start;color:var(--brass)}
+.kb-grid .d{color:var(--muted);font-size:12px}
+.modal p.lead{margin:0 0 14px;color:var(--muted);line-height:1.55}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.legend .lg{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;
+  border:1px solid var(--line);border-radius:4px;padding:3px 7px;color:var(--muted)}
+.legend .lg i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+/* toast */
+#toast{position:absolute;bottom:16px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--panel-3);border:1px solid var(--line-2);border-radius:6px;padding:9px 15px;
+  font-size:12px;box-shadow:var(--shadow);opacity:0;transition:opacity .2s,transform .2s;z-index:80;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{border-color:var(--err)}
+#toast .mono{color:var(--brass)}
+
+.hidden{display:none !important}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px;border:2px solid var(--panel)}
+::-webkit-scrollbar-thumb:hover{background:var(--line-2)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="toolbar">
+    <div id="brand"><div class="logo">Q</div><div class="title">DME&nbsp;<b>QUEST</b>&nbsp;EDITOR</div></div>
+    <div class="tb-sep"></div>
+    <button class="tb-btn primary" id="btnNewQuest">+ Quest <span class="k">N</span></button>
+    <button class="tb-btn" id="btnNewTrader">+ Trader <span class="k">T</span></button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="btnUndo" title="Rückgängig (Ctrl+Z)">↶</button>
+    <button class="tb-btn" id="btnRedo" title="Wiederholen (Ctrl+Y)">↷</button>
+    <button class="tb-btn" id="btnLayout" title="Auto-Layout (L)">Layout</button>
+    <button class="tb-btn" id="btnFit" title="Ansicht einpassen (F)">Fit</button>
+    <div class="tb-spacer"></div>
+    <button class="tb-btn" id="btnImport">Import</button>
+    <button class="tb-btn" id="btnCode">&lt;/&gt; JSON</button>
+    <button class="tb-btn primary" id="btnExport">Export ZIP</button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="btnValidate" title="Validierung">Prüfen <span class="count-pill ok" id="valPill">0</span></button>
+    <button class="tb-btn" id="btnHelp" title="Hilfe (?)">?</button>
+    <button class="tb-btn danger" id="btnClear" title="Alles löschen">Clear</button>
+    <span id="zoomLabel">100%</span>
+  </header>
+
+  <div id="stage">
+    <div id="canvas">
+      <div id="world">
+        <svg id="edges"></svg>
+      </div>
+    </div>
+
+    <aside id="inspector">
+      <div id="insp-head" class="hidden">
+        <div>
+          <div class="h-tag" id="ih-tag">QUEST</div>
+          <div class="h-title" id="ih-title">—</div>
+          <div class="h-sub" id="ih-sub"></div>
+        </div>
+        <button id="insp-close" title="Auswahl aufheben">×</button>
+      </div>
+      <div id="insp-body">
+        <div id="insp-empty">
+          <div class="big">Kein Node ausgewählt</div>
+          <div style="line-height:1.6">Wähle eine Quest oder einen Trader,<br>oder erstelle mit <b>N</b>/<b>T</b> einen neuen.<br><br>
+          Ziehen vom <span style="color:#4A90D9">blauen Port</span> = Trader bietet Quest an.<br>
+          Ziehen vom <span style="color:var(--brass)">Messing-Port</span> = Quest-Voraussetzung.</div>
+        </div>
+      </div>
+    </aside>
+
+    <div id="valpanel" class="hidden">
+      <div class="vp-head" id="valHead"><span class="s-name">Validierung</span><span class="count-pill ok" id="valPill2">0</span><span style="color:var(--faint)">×</span></div>
+      <div class="vp-body" id="valBody"></div>
+    </div>
+
+    <div id="ctxmenu"></div>
+    <div id="toast"></div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-bg" id="modalHelp">
+  <div class="modal">
+    <div class="m-head"><h2>Hilfe &amp; Tastenkürzel</h2><button data-close>×</button></div>
+    <div class="m-body">
+      <p class="lead">Visueller Node-Editor für <b>DME_Tasks</b>-Quests. Trader bieten Quests an (blaue Kante);
+      Quests verketten sich über Voraussetzungen (Messing-Kante von unten). Der Export erzeugt die
+      Serverprofil-Struktur <span class="mono">DME_Tasks/Traders/*.json</span> + <span class="mono">Quests/*.json</span>.</p>
+      <div class="kb-grid" id="kbGrid"></div>
+      <div style="margin-top:16px" class="eyebrow">Objective-Typen</div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalCode">
+  <div class="modal">
+    <div class="m-head"><h2 id="codeTitle">JSON</h2><div style="display:flex;gap:8px"><button class="mini-btn" data-copy>Kopieren</button><button data-close>×</button></div></div>
+    <div class="m-body"><pre id="codePre"></pre></div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".json,.zip" multiple class="hidden">
+
+<script>
+"use strict";
+// constants.js
+// ---------- Constants ----------
+const FACTIONS = ["NEUTRAL","WEST","EAST","BANDITS","MONSTERS","TRADE_UNION"];
+const FACTION_COLOR = {NEUTRAL:"#8A8F98",WEST:"#4A90D9",EAST:"#D94A4A",BANDITS:"#E0982E",MONSTERS:"#9B59B6",TRADE_UNION:"#3DD68C"};
+const CATEGORIES = ["STORY","SIDE","FACTION","BOSS","EXPEDITION","DAILY","WEEKLY"];
+const CATEGORY_COLOR = {STORY:"#C9A227",SIDE:"#4AA8E0",FACTION:"#D94A4A",BOSS:"#F76808",EXPEDITION:"#66C2A5",DAILY:"#3DD68C",WEEKLY:"#8B7BE8"};
+const OBJ_TYPES = ["KILL","BOSS","COLLECT","HANDOVER","DELIVER","TRAVEL","DISCOVER","MARK","STASH","INTERACT","SURVIVE","RETURN_TO_TRADER","CRAFT","ESCORT","DEFEND","USE_ITEM","SIGNAL","GROUP","EXTRACT"];
+const OBJ_COLOR = {KILL:"#E5484D",BOSS:"#F76808",COLLECT:"#3DD68C",HANDOVER:"#E0982E",DELIVER:"#E0982E",TRAVEL:"#4AA8E0",DISCOVER:"#2BC4C4",MARK:"#8B7BE8",STASH:"#8B7BE8",INTERACT:"#C9A227",SURVIVE:"#D08770",RETURN_TO_TRADER:"#B48EAD",CRAFT:"#A3BE8C",ESCORT:"#F0A868",DEFEND:"#F0A868",USE_ITEM:"#C9A227",SIGNAL:"#56B6C2",GROUP:"#7A8290",EXTRACT:"#66C2A5"};
+const TARGET_CATS = ["","INFECTED","PLAYER","ANIMAL","AI"];
+const STORE_KEY = "dme_quest_editor_v1";
+
+// which extra fields each objective type surfaces (beyond Id/Type/Amount)
+const OBJ_FIELDS = {
+  KILL:["TargetCategory","ClassNames","Zone","RequiredZones","BossId"],
+  BOSS:["BossId","ClassNames","Zone"],
+  COLLECT:["ClassNames","FoundInWorldRequired","AllowedOrigins"],
+  HANDOVER:["ReferencesObjective","AllowPartialHandover"],
+  DELIVER:["ClassNames","ReferencesObjective","Zone"],
+  TRAVEL:["Zone"],
+  DISCOVER:["Zone"],
+  MARK:["Zone","ClassNames"],
+  STASH:["ClassNames","Zone"],
+  INTERACT:["ClassNames","Zone"],
+  SURVIVE:["Zone"],
+  RETURN_TO_TRADER:["TraderId","MustBeAlive"],
+  CRAFT:["ClassNames"],
+  ESCORT:["Zone"],
+  DEFEND:["Zone"],
+  USE_ITEM:["ClassNames","Zone"],
+  SIGNAL:["Zone"],
+  GROUP:[],
+  EXTRACT:["Zone"]
+};
+
+// model.js
+// ---------- Utils ----------
+function uid(prefix){ let n=1; const ids=new Set([...state.traders.map(t=>t.id),...state.quests.map(q=>q.QuestId)]);
+  while(ids.has(prefix+n)) n++; return prefix+n; }
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+// ---------- Model factories ----------
+function newTraderDef(){ return {Version:1,TraderId:uid("trader_"),DisplayName:"Neuer Trader",Faction:"NEUTRAL",
+  LoyaltyLevels:[{Level:1,RequiredPlayerLevel:0,RequiredReputation:0.0,RequiredTurnover:0}]}; }
+function newQuestDef(){ return {Version:1,QuestId:uid("quest_"),TraderId:"",Category:"SIDE",Title:"Neue Quest",
+  Description:"",Repeatable:false,FailOnDeath:false,FailOnFactionChange:false,TimeLimit:-1,
+  Prerequisites:emptyPrereq(),Objectives:[],Rewards:emptyReward(),Unlocks:emptyUnlock(),Choices:[]}; }
+function emptyPrereq(){ return {MinimumPlayerLevel:0,RequiredFaction:"",MinimumTraderReputation:0,RequiredTraderLevel:0,
+  RequiredCompletedQuests:[],BlockedByCompletedQuests:[],RequiredDecisions:[],BlockedByDecisions:[],RequiredSkills:[],
+  RequiredSeasonLevel:0,RequiredBossProgress:"",RequiredItem:"",FromHour:-1,ToHour:-1}; }
+function emptyReward(){ return {PlayerExperience:0,Currency:0,TraderReputation:0,RivalReputation:[],Items:[],SkillPoints:0,SeasonXp:0}; }
+function emptyUnlock(){ return {QuestIds:[],MarketItems:[],Keys:[],BossAccess:""}; }
+function newObjective(type){ const o={ObjectiveId:"obj_"+Math.random().toString(36).slice(2,6),Type:type||"TRAVEL",Amount:1};
+  if(OBJ_FIELDS[o.Type].includes("Zone")) o.Zone=newZone(); return o; }
+function newZone(){ return {ZoneId:"",CenterX:0,CenterY:0,CenterZ:0,Radius:50,Height:100}; }
+
+function traderById(id){ return state.traders.find(t=>t.id===id); }
+function questById(id){ return state.quests.find(q=>q.QuestId===id); }
+// node accessors that hide the id-field difference
+function nodeId(n){ return n.__k==="trader"?n.id:n.QuestId; }
+
+// state.js
+
+// ---------- State ----------
+let state = { traders:[], quests:[] };   // nodes carry editor-only _x,_y
+let view = { x:120, y:90, k:1 };
+let selection = null;                     // {kind:'quest'|'trader', id}
+let undoStack = [], redoStack = [];
+let validationCache = [];
+
+// ---------- DOM ----------
+const $ = s => document.querySelector(s);
+const canvas = $("#canvas"), world = $("#world"), edgesSvg = $("#edges");
+const inspBody = $("#insp-body"), inspHead = $("#insp-head"), inspEmpty = $("#insp-empty");
+
+// ---------- Utils ----------
+function toast(msg,isErr){ const t=$("#toast"); t.innerHTML=msg; t.className=isErr?"show err":"show";
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className="",2200); }
+function el(tag,props,kids){ const e=document.createElement(tag);
+  if(props) for(const k in props){ if(k==="class")e.className=props[k]; else if(k==="text")e.textContent=props[k];
+    else if(k==="html")e.innerHTML=props[k]; else if(k.startsWith("on"))e.addEventListener(k.slice(2).toLowerCase(),props[k]);
+    else if(k==="style")e.setAttribute("style",props[k]); else e.setAttribute(k,props[k]); }
+  if(kids) (Array.isArray(kids)?kids:[kids]).forEach(c=>{ if(c!=null) e.append(c.nodeType?c:document.createTextNode(c)); });
+  return e; }
+function snap(v){ return Math.round(v/13)*13; }
+
+// ---------- Persistence & history ----------
+function save(){ localStorage.setItem(STORE_KEY, JSON.stringify({state,view})); }
+function load(){ try{ const raw=localStorage.getItem(STORE_KEY); if(!raw)return false;
+  const d=JSON.parse(raw); if(d&&d.state){ state=d.state; if(d.view)view=d.view;
+    state.traders=state.traders||[]; state.quests=state.quests||[]; return true; } }catch(e){} return false; }
+function snapshot(){ undoStack.push(JSON.stringify(state)); if(undoStack.length>60)undoStack.shift(); redoStack.length=0; }
+function undo(){ if(!undoStack.length)return; redoStack.push(JSON.stringify(state));
+  state=JSON.parse(undoStack.pop()); selection=null; renderAll(); save(); toast("Rückgängig"); }
+function redo(){ if(!redoStack.length)return; undoStack.push(JSON.stringify(state));
+  state=JSON.parse(redoStack.pop()); selection=null; renderAll(); save(); toast("Wiederholt"); }
+
+// ---------- Coordinate transform ----------
+function applyView(){ world.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.k})`;
+  $("#zoomLabel").textContent=Math.round(view.k*100)+"%"; }
+function screenToWorld(sx,sy){ const r=canvas.getBoundingClientRect();
+  return {x:(sx-r.left-view.x)/view.k, y:(sy-r.top-view.y)/view.k}; }
+
+// render.js
+/* =====================================================================
+   RENDERING
+   ===================================================================== */
+const nodeEls = new Map();   // id -> element
+
+function renderAll(){ world.querySelectorAll(".node").forEach(n=>n.remove()); nodeEls.clear();
+  state.traders.forEach(t=>{ t.__k="trader"; renderNode(t); });
+  state.quests.forEach(q=>{ q.__k="quest"; renderNode(q); });
+  measureNodes(); renderEdges(); renderInspector(); runValidation(); applyView(); }
+
+function measureNodes(){ nodeEls.forEach((elm,id)=>{ const n=elm.__node; n._w=elm.offsetWidth; n._h=elm.offsetHeight; }); }
+
+function renderNode(n){
+  const isTrader = n.__k==="trader";
+  const id = nodeId(n);
+  const wrap = el("div",{class:"node"+(isSel(n)?" sel":""),"data-id":id,"data-kind":n.__k});
+  wrap.style.left=(n._x||0)+"px"; wrap.style.top=(n._y||0)+"px"; wrap.__node=n;
+
+  const cat = isTrader ? (n.Faction||"NEUTRAL") : (n.Category||"SIDE");
+  const accentColor = isTrader ? (FACTION_COLOR[n.Faction]||"#8A8F98") : (CATEGORY_COLOR[n.Category]||"#8A8F98");
+  wrap.append(el("div",{class:"accent",style:`background:${accentColor}`}));
+
+  const tag = el("span",{class:"ntag",text:isTrader?"TRADER":"QUEST",
+    style:`color:${accentColor};border-color:${accentColor}55;background:${accentColor}14`});
+  const title = el("div",{class:"ntitle",text:(isTrader?n.DisplayName:n.Title)||"(ohne Titel)"});
+  const head = el("div",{class:"nhead"},[tag,title]);
+  wrap.append(head);
+  wrap.append(el("div",{class:"nid",text:id}));
+
+  if(isTrader){
+    const lv=(n.LoyaltyLevels||[]).length;
+    wrap.append(el("div",{class:"nbadges"},[
+      el("span",{class:"badge",text:n.Faction||"NEUTRAL"}),
+      el("span",{class:"badge",text:lv+" LOYALTY"})
+    ]));
+    // output port: offers quests
+    wrap.append(portEl("out-trader","BIETET AN"));
+  } else {
+    // badges
+    const badges=[el("span",{class:"badge",text:n.Category||"SIDE"})];
+    if(n.Repeatable) badges.push(el("span",{class:"badge",text:"REPEAT"}));
+    if(n.TimeLimit>0) badges.push(el("span",{class:"badge",text:"⏱ "+n.TimeLimit+"s"}));
+    if((n.Prerequisites&&n.Prerequisites.RequiredCompletedQuests||[]).length) badges.push(el("span",{class:"badge",text:"↳ CHAIN"}));
+    wrap.append(el("div",{class:"nbadges"},badges));
+    // objectives
+    const objs=n.Objectives||[];
+    if(objs.length){ const list=el("div",{class:"obj-list"});
+      objs.slice(0,6).forEach(o=>{ const c=OBJ_COLOR[o.Type]||"#7A8290";
+        list.append(el("div",{class:"obj-row"},[
+          el("span",{class:"obj-dot",style:`background:${c}`}),
+          el("span",{class:"obj-type",text:o.Type}),
+          el("span",{class:"obj-txt",text:objSummary(o)})
+        ])); });
+      if(objs.length>6) list.append(el("div",{class:"obj-row"},[el("span",{class:"obj-txt",style:"color:var(--faint)",text:"+"+(objs.length-6)+" weitere…"})]));
+      wrap.append(list);
+    } else { wrap.classList.add("empty-obj"); wrap.append(el("div",{class:"obj-empty",text:"keine Objectives"})); }
+    // footer: trader + validation flags
+    const issues=nodeIssues(id);
+    const foot=el("div",{class:"nfoot"});
+    foot.append(el("span",{text:n.TraderId?("→ "+n.TraderId):"⚠ kein Trader"}));
+    if(issues.length){ const e=issues.filter(i=>i.sev==="err").length, w=issues.length-e;
+      foot.append(el("span",{class:"flags-badge"+(e?"":" warn"),title:issues.map(i=>i.msg).join("\n"),
+        text:(e?e+" ERR":"")+(e&&w?" · ":"")+(w?w+" WARN":"")})); }
+    wrap.append(foot);
+    // ports
+    wrap.append(portEl("out-prereq","FOLLOW-UP"));
+  }
+
+  head.addEventListener("pointerdown",e=>startNodeDrag(e,n,wrap));
+  wrap.addEventListener("pointerdown",e=>{ if(e.button===0){ selectNode(n); } });
+  wrap.addEventListener("contextmenu",e=>{ e.preventDefault(); selectNode(n); openContextMenu(e.clientX,e.clientY,n); });
+  world.append(wrap); nodeEls.set(id,wrap);
+  return wrap;
+}
+function portEl(cls,label){ const p=el("div",{class:"port "+cls}); p.append(el("span",{class:"plabel",text:label}));
+  p.addEventListener("pointerdown",e=>startConnect(e,cls)); return p; }
+
+function objSummary(o){
+  if(o.Type==="KILL"||o.Type==="BOSS"){ const who=o.BossId?("Boss "+o.BossId):(o.TargetCategory||((o.ClassNames||[])[0])||"Ziel"); return o.Amount+"× "+who; }
+  if(o.Type==="COLLECT"||o.Type==="CRAFT"||o.Type==="DELIVER"){ return o.Amount+"× "+((o.ClassNames||[])[0]||"Item"); }
+  if(o.Type==="HANDOVER"){ return "abgeben → "+(o.ReferencesObjective||"?"); }
+  if(o.Type==="TRAVEL"||o.Type==="DISCOVER"||o.Type==="ESCORT"||o.Type==="DEFEND"||o.Type==="EXTRACT"){ return o.Zone&&o.Zone.ZoneId?o.Zone.ZoneId:"Zone"; }
+  if(o.Type==="RETURN_TO_TRADER"){ return "→ "+(o.TraderId||"Trader"); }
+  if(o.Type==="SURVIVE"){ return o.Amount+"s"; }
+  return o.ObjectiveId;
+}
+
+// ----- Edges -----
+function nodePortPos(n,which){ const w=n._w||248, h=n._h||90;
+  if(which==="trader-out") return {x:(n._x||0)+w, y:(n._y||0)+22};
+  if(which==="trader-in")  return {x:(n._x||0),   y:(n._y||0)+22};
+  if(which==="prereq-out") return {x:(n._x||0)+w/2, y:(n._y||0)+h};
+  if(which==="prereq-in")  return {x:(n._x||0)+w/2, y:(n._y||0)}; }
+
+function renderEdges(){
+  while(edgesSvg.firstChild) edgesSvg.removeChild(edgesSvg.firstChild);
+  const frag=document.createDocumentFragment();
+  // trader -> quest (offers)
+  state.quests.forEach(q=>{ if(!q.TraderId)return; const t=traderById(q.TraderId); if(!t)return;
+    const a=nodePortPos(t,"trader-out"), b=nodePortPos(q,"trader-in");
+    frag.append(edgePath(a,b,"h","#4A90D9",{kind:"trader",to:q.QuestId},"")); });
+  // quest -> quest (prereq): A required by B  => edge A(bottom) -> B(top)
+  state.quests.forEach(b=>{ const reqs=(b.Prerequisites&&b.Prerequisites.RequiredCompletedQuests)||[];
+    reqs.forEach(reqId=>{ const a=questById(reqId); if(!a)return;
+      const pa=nodePortPos(a,"prereq-out"), pb=nodePortPos(b,"prereq-in");
+      frag.append(edgePath(pa,pb,"v","#C9A227",{kind:"prereq",from:reqId,to:b.QuestId},"")); }); });
+  edgesSvg.append(frag);
+}
+function edgePath(a,b,dir,color,meta,label){
+  const g=document.createElementNS("http://www.w3.org/2000/svg","g");
+  let d;
+  if(dir==="h"){ const dx=Math.max(46,Math.abs(b.x-a.x)*0.5); d=`M ${a.x} ${a.y} C ${a.x+dx} ${a.y}, ${b.x-dx} ${b.y}, ${b.x} ${b.y}`; }
+  else { const dy=Math.max(46,Math.abs(b.y-a.y)*0.5); d=`M ${a.x} ${a.y} C ${a.x} ${a.y+dy}, ${b.x} ${b.y-dy}, ${b.x} ${b.y}`; }
+  const hit=document.createElementNS("http://www.w3.org/2000/svg","path"); hit.setAttribute("d",d); hit.setAttribute("class","hit");
+  const wire=document.createElementNS("http://www.w3.org/2000/svg","path"); wire.setAttribute("d",d);
+  wire.setAttribute("class","wire"); wire.setAttribute("stroke",color); wire.setAttribute("stroke-dasharray",meta.kind==="prereq"?"6 4":"");
+  wire.setAttribute("opacity","0.85");
+  hit.addEventListener("click",()=>deleteEdge(meta));
+  hit.addEventListener("contextmenu",e=>{e.preventDefault();deleteEdge(meta);});
+  g.append(hit,wire);
+  // label
+  const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+  const tx=document.createElementNS("http://www.w3.org/2000/svg","text");
+  tx.setAttribute("x",mx); tx.setAttribute("y",my-2); tx.setAttribute("text-anchor","middle");
+  tx.setAttribute("class","elabel"); tx.textContent=meta.kind==="trader"?"bietet an":"setzt voraus";
+  g.append(tx);
+  return g;
+}
+function deleteEdge(meta){ snapshot();
+  if(meta.kind==="trader"){ const q=questById(meta.to); if(q)q.TraderId=""; }
+  else { const b=questById(meta.to); if(b){ const arr=b.Prerequisites.RequiredCompletedQuests;
+    const i=arr.indexOf(meta.from); if(i>=0)arr.splice(i,1); } }
+  renderAll(); save(); toast("Verbindung entfernt"); }
+
+// ----- helpers for selection & node card refresh -----
+function isSel(n){ return selection && selection.kind===n.__k && selection.id===nodeId(n); }
+function refreshNode(n){ const id=nodeId(n); const old=nodeEls.get(id); const nw=renderNode(n);
+  if(old){ nw.style.zIndex=old.style.zIndex; old.remove(); } measureOne(n); renderEdges(); }
+function measureOne(n){ const e=nodeEls.get(nodeId(n)); if(e){ n._w=e.offsetWidth; n._h=e.offsetHeight; } }
+
+// interact.js
+/* =====================================================================
+   INTERACTION: pan / zoom / drag / connect
+   ===================================================================== */
+let dragState=null, panState=null, connectState=null, spaceDown=false;
+
+canvas.addEventListener("pointerdown",e=>{
+  if(e.target===canvas||e.target===world||e.target===edgesSvg){
+    if(e.button===0&&!spaceDown){ selectNode(null); }
+    if(e.button===1||e.button===2||spaceDown||e.button===0){ startPan(e); }
+    if(e.button===2){ /* handled in contextmenu */ }
+  }
+});
+canvas.addEventListener("contextmenu",e=>{ if(e.target===canvas||e.target===world||e.target===edgesSvg){ e.preventDefault(); openContextMenu(e.clientX,e.clientY,null); } });
+
+function startPan(e){ if(e.button===2)return; panState={sx:e.clientX,sy:e.clientY,ox:view.x,oy:view.y};
+  canvas.classList.add("panning"); canvas.setPointerCapture(e.pointerId); }
+
+function startNodeDrag(e,n,wrap){ if(e.button!==0)return; e.stopPropagation();
+  const w0=screenToWorld(e.clientX,e.clientY); dragState={n,wrap,dx:w0.x-(n._x||0),dy:w0.y-(n._y||0),moved:false};
+  wrap.style.zIndex=1000; canvas.setPointerCapture(e.pointerId); }
+
+function startConnect(e,cls){ e.stopPropagation(); e.preventDefault();
+  const wrap=e.target.closest(".node"); const n=wrap.__node;
+  const from = cls==="out-trader" ? nodePortPos(n,"trader-out") : nodePortPos(n,"prereq-out");
+  connectState={kind:cls==="out-trader"?"trader":"prereq", src:n, from};
+  const p=document.createElementNS("http://www.w3.org/2000/svg","path");
+  p.setAttribute("class","wire"); p.setAttribute("stroke",cls==="out-trader"?"#4A90D9":"#C9A227");
+  p.setAttribute("stroke-dasharray","5 4"); p.setAttribute("opacity","0.9"); p.id="tempwire";
+  edgesSvg.append(p); canvas.classList.add("connecting"); canvas.setPointerCapture(e.pointerId); }
+
+window.addEventListener("pointermove",e=>{
+  if(panState){ view.x=panState.ox+(e.clientX-panState.sx); view.y=panState.oy+(e.clientY-panState.sy); applyView(); return; }
+  if(dragState){ const w=screenToWorld(e.clientX,e.clientY); const nx=w.x-dragState.dx, ny=w.y-dragState.dy;
+    dragState.n._x=snap(nx); dragState.n._y=snap(ny); dragState.wrap.style.left=dragState.n._x+"px";
+    dragState.wrap.style.top=dragState.n._y+"px"; dragState.moved=true; renderEdges(); return; }
+  if(connectState){ const w=screenToWorld(e.clientX,e.clientY); const a=connectState.from;
+    const p=$("#tempwire"); if(p){ const dir=connectState.kind==="trader"?"h":"v";
+      let d; if(dir==="h"){const dx=Math.max(46,Math.abs(w.x-a.x)*0.5);d=`M ${a.x} ${a.y} C ${a.x+dx} ${a.y}, ${w.x-dx} ${w.y}, ${w.x} ${w.y}`;}
+      else{const dy=Math.max(46,Math.abs(w.y-a.y)*0.5);d=`M ${a.x} ${a.y} C ${a.x} ${a.y+dy}, ${w.x} ${w.y-dy}, ${w.x} ${w.y}`;}
+      p.setAttribute("d",d); } return; }
+});
+window.addEventListener("pointerup",e=>{
+  if(panState){ panState=null; canvas.classList.remove("panning"); }
+  if(dragState){ if(dragState.moved){ snapshot(); save(); } dragState.wrap.style.zIndex=""; dragState=null; }
+  if(connectState){ finishConnect(e); }
+});
+
+function finishConnect(e){ const tmp=$("#tempwire"); if(tmp)tmp.remove(); canvas.classList.remove("connecting");
+  const target=document.elementFromPoint(e.clientX,e.clientY); const wrap=target&&target.closest(".node");
+  const cs=connectState; connectState=null;
+  if(!wrap){ return; } const tn=wrap.__node;
+  if(cs.kind==="trader"){ if(tn.__k!=="quest"){ toast("Trader-Kante nur auf eine Quest",true); return; }
+    snapshot(); tn.TraderId=cs.src.id; renderAll(); save(); toast("Trader bietet Quest an"); }
+  else { if(tn.__k!=="quest"){ toast("Voraussetzung nur zwischen Quests",true); return; }
+    if(tn===cs.src){ return; }
+    if(wouldCycle(cs.src.QuestId,tn.QuestId)){ toast("Zyklus verhindert",true); return; }
+    const arr=tn.Prerequisites.RequiredCompletedQuests; if(arr.includes(cs.src.QuestId)){ toast("Bereits verknüpft"); return; }
+    snapshot(); arr.push(cs.src.QuestId); renderAll(); save(); toast("Voraussetzung gesetzt"); }
+}
+function wouldCycle(fromId,toId){ // adding edge from->to; cycle if 'from' is reachable from 'to' via prereqs
+  const seen=new Set(); const stack=[toId];
+  while(stack.length){ const cur=stack.pop(); if(cur===fromId)return true; if(seen.has(cur))continue; seen.add(cur);
+    const q=questById(cur); if(q) (q.Prerequisites.RequiredCompletedQuests||[]).forEach(r=>stack.push(r)); }
+  return false; }
+
+// zoom
+canvas.addEventListener("wheel",e=>{ e.preventDefault(); const r=canvas.getBoundingClientRect();
+  const mx=e.clientX-r.left, my=e.clientY-r.top; const wx=(mx-view.x)/view.k, wy=(my-view.y)/view.k;
+  const factor=e.deltaY<0?1.12:1/1.12; view.k=Math.min(2.4,Math.max(0.25,view.k*factor));
+  view.x=mx-wx*view.k; view.y=my-wy*view.k; applyView(); save(); },{passive:false});
+
+// keyboard
+window.addEventListener("keydown",e=>{
+  if(e.code==="Space"&&!isTyping(e)){ spaceDown=true; }
+  if(isTyping(e)) return;
+  const ctrl=e.ctrlKey||e.metaKey;
+  if(ctrl&&e.key.toLowerCase()==="z"){ e.preventDefault(); undo(); return; }
+  if(ctrl&&(e.key.toLowerCase()==="y"||(e.shiftKey&&e.key.toLowerCase()==="z"))){ e.preventDefault(); redo(); return; }
+  if(ctrl&&e.key.toLowerCase()==="d"){ e.preventDefault(); duplicateSelection(); return; }
+  if(e.key==="n"||e.key==="N"){ e.preventDefault(); addQuest(); }
+  else if(e.key==="t"||e.key==="T"){ e.preventDefault(); addTrader(); }
+  else if(e.key==="f"||e.key==="F"){ e.preventDefault(); fitView(); }
+  else if(e.key==="l"||e.key==="L"){ e.preventDefault(); autoLayout(); }
+  else if(e.key==="?"){ e.preventDefault(); openModal("#modalHelp"); }
+  else if(e.key==="Delete"||e.key==="Backspace"){ e.preventDefault(); deleteSelection(); }
+  else if(e.key==="Escape"){ selectNode(null); closeModals(); closeContextMenu(); }
+});
+window.addEventListener("keyup",e=>{ if(e.code==="Space")spaceDown=false; });
+function isTyping(e){ const t=e.target; return t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT"||t.isContentEditable); }
+
+// inspector.js
+/* =====================================================================
+   SELECTION + INSPECTOR
+   ===================================================================== */
+function selectNode(n){ closeContextMenu();
+  const prev=selection; selection = n? {kind:n.__k,id:nodeId(n)} : null;
+  // update sel classes cheaply
+  nodeEls.forEach((elm,id)=>elm.classList.remove("sel"));
+  if(n){ const e=nodeEls.get(nodeId(n)); if(e)e.classList.add("sel"); }
+  renderInspector();
+}
+function selectedNode(){ if(!selection)return null;
+  return selection.kind==="trader"?traderById(selection.id):questById(selection.id); }
+
+function renderInspector(){
+  const n=selectedNode();
+  if(!n){ inspHead.classList.add("hidden"); inspEmpty.classList.remove("hidden");
+    inspBody.querySelectorAll(".sect").forEach(s=>s.remove()); return; }
+  inspEmpty.classList.add("hidden"); inspHead.classList.remove("hidden");
+  $("#ih-tag").textContent = n.__k==="trader"?"TRADER":"QUEST";
+  $("#ih-title").textContent = (n.__k==="trader"?n.DisplayName:n.Title)||"(ohne Titel)";
+  $("#ih-sub").textContent = n.__k==="trader"
+    ? nodeId(n)+" · "+(n.LoyaltyLevels||[]).length+" Loyalty-Level"
+    : nodeId(n)+" · "+(n.Objectives||[]).length+" Obj · "+(n.Rewards.Items||[]).length+" Item-Rewards";
+  inspBody.querySelectorAll(".sect").forEach(s=>s.remove());
+  if(n.__k==="trader") buildTraderInspector(n); else buildQuestInspector(n);
+}
+
+// section helper
+function section(title,count,open,build){ const s=el("div",{class:"sect"+(open?" open":"")});
+  const head=el("div",{class:"sect-head"},[el("span",{class:"chev",text:"▶"}),el("span",{class:"s-name",text:title}),
+    count!=null?el("span",{class:"s-count",text:count}):null]);
+  head.addEventListener("click",()=>s.classList.toggle("open"));
+  const body=el("div",{class:"sect-body"}); s.append(head,body); build(body); inspBody.append(s); return s; }
+
+// bound controls
+function txt(obj,key,label,ph,onEdit){ const f=el("div",{class:"f"});
+  f.append(el("label",{text:label})); const i=el("input",{class:"ctrl",type:"text",value:obj[key]==null?"":obj[key]});
+  if(ph)i.placeholder=ph; i.addEventListener("input",()=>{ obj[key]=i.value; (onEdit||liveRefresh)(); });
+  f.append(i); return f; }
+function area(obj,key,label){ const f=el("div",{class:"f"}); f.append(el("label",{text:label}));
+  const i=el("textarea",{class:"ctrl"}); i.value=obj[key]||""; i.addEventListener("input",()=>{obj[key]=i.value;liveRefresh();});
+  f.append(i); return f; }
+function num(obj,key,label,step){ const f=el("div",{class:"f"}); f.append(el("label",{text:label}));
+  const i=el("input",{class:"ctrl",type:"number",value:obj[key]}); if(step)i.step=step;
+  i.addEventListener("input",()=>{ const v=i.value===""?0:(step?parseFloat(i.value):parseInt(i.value,10)); obj[key]=isNaN(v)?0:v; liveRefresh(); });
+  f.append(i); return f; }
+function sel(obj,key,label,opts,onEdit){ const f=el("div",{class:"f"}); f.append(el("label",{text:label}));
+  const s=el("select",{class:"ctrl"}); opts.forEach(o=>{ const op=el("option",{value:o,text:o||"(keine)"}); if((obj[key]||"")===o)op.selected=true; s.append(op); });
+  s.addEventListener("change",()=>{ obj[key]=s.value; (onEdit||liveRefresh)(); }); f.append(s); return f; }
+function chk(obj,key,label){ const l=el("label",{class:"chk"}); const i=el("input",{type:"checkbox"});
+  i.checked=!!obj[key]; i.addEventListener("change",()=>{obj[key]=i.checked;liveRefresh();});
+  l.append(i,document.createTextNode(label)); return l; }
+function strList(arr,label,ph){ const f=el("div",{class:"f"}); f.append(el("label",{text:label}));
+  const list=el("div",{class:"taglist"});
+  function redraw(){ list.innerHTML="";
+    arr.forEach((v,idx)=>{ const tg=el("span",{class:"tag"},[document.createTextNode(v)]);
+      tg.append(el("button",{text:"×",onClick:()=>{arr.splice(idx,1);redraw();liveRefresh();}})); list.append(tg); });
+    const add=el("span",{class:"tag add"}); const inp=el("input",{type:"text",placeholder:ph||"hinzufügen…"});
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter"&&inp.value.trim()){ arr.push(inp.value.trim()); redraw(); liveRefresh(); } });
+    add.append(inp); list.append(add); }
+  redraw(); f.append(list); return f; }
+
+let liveTimer=null;
+function liveRefresh(){ const n=selectedNode(); if(n){ n.__k=n.__k||(n.QuestId?"quest":"trader"); refreshNode(n);
+  $("#ih-title").textContent=(n.__k==="trader"?n.DisplayName:n.Title)||"(ohne Titel)"; }
+  runValidation(); clearTimeout(liveTimer); liveTimer=setTimeout(save,250); }
+
+// ---- Trader inspector ----
+function buildTraderInspector(t){
+  section("Identität",null,true,b=>{
+    b.append(idField(t,"id","Trader-ID",true));
+    b.append(txt(t,"DisplayName","Anzeigename","z.B. Quartiermeister Rask"));
+    b.append(hintFor("DisplayName mit führendem # = Stringtable-Key; sonst Klartext."));
+    b.append(sel(t,"Faction","Fraktion",FACTIONS));
+  });
+  section("Loyalty-Level",(t.LoyaltyLevels||[]).length,true,b=>{
+    (t.LoyaltyLevels||[]).forEach((lv,i)=>{ const card=itemCard(FACTION_COLOR[t.Faction]||"#8A8F98","Level "+lv.Level,
+      ()=>{ t.LoyaltyLevels.splice(i,1); renderInspector(); liveRefresh(); });
+      const bd=card.querySelector(".ic-body");
+      bd.append(row2(num(lv,"Level","Level"),num(lv,"RequiredPlayerLevel","Min. Spielerlevel")));
+      bd.append(row2(num(lv,"RequiredReputation","Min. Reputation","0.01"),num(lv,"RequiredTurnover","Min. Umsatz")));
+      b.append(card); });
+    b.append(el("button",{class:"add-btn",text:"+ Loyalty-Level",onClick:()=>{ const lv=(t.LoyaltyLevels[t.LoyaltyLevels.length-1]||{}).Level||0;
+      t.LoyaltyLevels.push({Level:lv+1,RequiredPlayerLevel:0,RequiredReputation:0,RequiredTurnover:0}); renderInspector(); liveRefresh(); }}));
+  });
+}
+
+// ---- Quest inspector ----
+function buildQuestInspector(q){
+  section("Identität",null,true,b=>{
+    b.append(idField(q,"QuestId","Quest-ID",false));
+    b.append(txt(q,"Title","Titel","z.B. Der verlorene Konvoi"));
+    b.append(area(q,"Description","Beschreibung"));
+    b.append(hintFor("Titel/Beschreibung mit # = Stringtable-Key; sonst Klartext (DME_Tasks_Loc zeigt verbatim)."));
+    b.append(sel(q,"Category","Kategorie",CATEGORIES));
+    b.append(traderSelect(q));
+  });
+  section("Flags",null,false,b=>{
+    b.append(chk(q,"Repeatable","Wiederholbar"));
+    b.append(chk(q,"FailOnDeath","Bei Tod fehlschlagen"));
+    b.append(chk(q,"FailOnFactionChange","Bei Fraktionswechsel fehlschlagen"));
+    b.append(num(q,"TimeLimit","Zeitlimit (Sek, -1 = keins)"));
+  });
+  section("Objectives",(q.Objectives||[]).length,true,b=>buildObjectives(q,b));
+  section("Belohnungen",null,false,b=>buildRewards(q,b));
+  section("Voraussetzungen",(q.Prerequisites.RequiredCompletedQuests||[]).length,false,b=>buildPrereqs(q,b));
+  section("Freischaltungen",null,false,b=>{
+    b.append(strList(q.Unlocks.QuestIds,"Quest-IDs freischalten","quest_x"));
+    b.append(strList(q.Unlocks.MarketItems,"Market-Items freischalten","AK74"));
+    b.append(strList(q.Unlocks.Keys,"Keys","key_x"));
+    b.append(txt(q.Unlocks,"BossAccess","Boss-Zugang",""));
+  });
+}
+
+function buildObjectives(q,b){
+  (q.Objectives||[]).forEach((o,i)=>{ const color=OBJ_COLOR[o.Type]||"#7A8290";
+    const card=itemCard(color,o.Type+" · "+o.ObjectiveId,()=>{ q.Objectives.splice(i,1); renderInspector(); liveRefresh(); });
+    const bd=card.querySelector(".ic-body");
+    const head=card.querySelector(".ic-head");
+    // reorder controls
+    const mv=el("span",{style:"display:flex;gap:2px;margin-right:2px"});
+    mv.append(el("button",{class:"ic-x",text:"↑",title:"nach oben",style:"font-size:12px",onClick:e=>{e.stopPropagation();if(i>0){[q.Objectives[i-1],q.Objectives[i]]=[q.Objectives[i],q.Objectives[i-1]];renderInspector();liveRefresh();}}}));
+    mv.append(el("button",{class:"ic-x",text:"↓",title:"nach unten",style:"font-size:12px",onClick:e=>{e.stopPropagation();if(i<q.Objectives.length-1){[q.Objectives[i+1],q.Objectives[i]]=[q.Objectives[i],q.Objectives[i+1]];renderInspector();liveRefresh();}}}));
+    head.insertBefore(mv,head.querySelector(".ic-x"));
+    // fields
+    bd.append(row2(txt(o,"ObjectiveId","Objective-ID"),
+      sel(o,"Type","Typ",OBJ_TYPES,()=>{ ensureObjFields(o); renderInspector(); liveRefresh(); })));
+    bd.append(num(o,"Amount","Anzahl"));
+    const extra=OBJ_FIELDS[o.Type]||[];
+    if(extra.includes("TargetCategory")) bd.append(sel(o,"TargetCategory","Ziel-Kategorie",TARGET_CATS));
+    if(extra.includes("ClassNames")){ o.ClassNames=o.ClassNames||[]; bd.append(strList(o.ClassNames,"Klassennamen","ZmbM_… / AK74")); }
+    if(extra.includes("BossId")) bd.append(txt(o,"BossId","Boss-ID",""));
+    if(extra.includes("ReferencesObjective")) bd.append(refObjSelect(o,q));
+    if(extra.includes("AllowPartialHandover")) bd.append(chk(o,"AllowPartialHandover","Teilabgabe erlauben"));
+    if(extra.includes("FoundInWorldRequired")) bd.append(chk(o,"FoundInWorldRequired","Muss in der Welt gefunden sein"));
+    if(extra.includes("AllowedOrigins")){ o.AllowedOrigins=o.AllowedOrigins||[]; bd.append(strList(o.AllowedOrigins,"Erlaubte Herkünfte","WORLD_LOOT")); }
+    if(extra.includes("MustBeAlive")) bd.append(chk(o,"MustBeAlive","Muss am Leben sein"));
+    if(extra.includes("TraderId")) bd.append(txt(o,"TraderId","Ziel-Trader-ID",""));
+    if(extra.includes("RequiredZones")){ o.RequiredZones=o.RequiredZones||[]; bd.append(strList(o.RequiredZones,"Erforderliche Zonen (ZoneId)","zone_id")); }
+    if(extra.includes("Zone")){ o.Zone=o.Zone||newZone(); bd.append(zoneEditor(o.Zone)); }
+    b.append(card);
+  });
+  const add=el("div",{class:"row2"});
+  const s=el("select",{class:"ctrl"}); OBJ_TYPES.forEach(t=>s.append(el("option",{value:t,text:t})));
+  add.append(s);
+  add.append(el("button",{class:"mini-btn",style:"flex:0 0 auto",text:"+ Objective",onClick:()=>{ snapshot();
+    q.Objectives.push(newObjective(s.value)); renderInspector(); liveRefresh(); }}));
+  b.append(add);
+}
+function ensureObjFields(o){ const f=OBJ_FIELDS[o.Type]||[];
+  if(f.includes("Zone")&&!o.Zone)o.Zone=newZone();
+  if(f.includes("ClassNames")&&!o.ClassNames)o.ClassNames=[]; }
+function refObjSelect(o,q){ const f=el("div",{class:"f"}); f.append(el("label",{text:"Referenziertes COLLECT-Objective"}));
+  const s=el("select",{class:"ctrl"}); s.append(el("option",{value:"",text:"(keins)"}));
+  (q.Objectives||[]).filter(x=>x.Type==="COLLECT").forEach(x=>{ const op=el("option",{value:x.ObjectiveId,text:x.ObjectiveId});
+    if(o.ReferencesObjective===x.ObjectiveId)op.selected=true; s.append(op); });
+  s.addEventListener("change",()=>{o.ReferencesObjective=s.value;liveRefresh();}); f.append(s); return f; }
+function zoneEditor(z){ const wrap=el("div",{class:"item-card",style:"margin:8px 0"});
+  wrap.append(el("div",{class:"ic-head"},[el("span",{class:"ic-dot",style:"background:#4AA8E0"}),el("span",{class:"ic-name",text:"ZONE"})]));
+  const bd=el("div",{class:"ic-body"});
+  bd.append(txt(z,"ZoneId","Zone-ID","mil_camp_west"));
+  bd.append(row2(num(z,"CenterX","Center X","0.01"),num(z,"CenterY","Center Y","0.01")));
+  bd.append(row2(num(z,"CenterZ","Center Z","0.01"),num(z,"Radius","Radius","0.1")));
+  bd.append(num(z,"Height","Höhe","0.1")); wrap.append(bd); return wrap; }
+
+function buildRewards(q,b){ const r=q.Rewards;
+  b.append(row2(num(r,"PlayerExperience","Erfahrung (XP)"),num(r,"Currency","Währung")));
+  b.append(row2(num(r,"TraderReputation","Trader-Reputation","0.01"),num(r,"SkillPoints","Skillpunkte")));
+  b.append(num(r,"SeasonXp","Season-XP"));
+  b.append(el("div",{class:"eyebrow",style:"margin-top:10px",text:"Item-Belohnungen"}));
+  (r.Items||[]).forEach((it,i)=>{ const card=itemCard("#3DD68C",(it.ClassName||"Item")+" ×"+(it.Amount||1),
+    ()=>{ r.Items.splice(i,1); renderInspector(); liveRefresh(); });
+    const bd=card.querySelector(".ic-body");
+    bd.append(row2(txt(it,"ClassName","Klassenname"),num(it,"Amount","Anzahl")));
+    it.Attachments=it.Attachments||[]; bd.append(strList(it.Attachments,"Anbauteile","Mag_AK74_30Rnd"));
+    b.append(card); });
+  b.append(el("button",{class:"add-btn",text:"+ Item-Belohnung",onClick:()=>{ r.Items.push({ClassName:"",Amount:1,Attachments:[]}); renderInspector(); liveRefresh(); }}));
+  b.append(el("div",{class:"eyebrow",style:"margin-top:12px",text:"Rivalen-Reputation"}));
+  (r.RivalReputation||[]).forEach((rv,i)=>{ const card=itemCard("#D94A4A",(rv.TraderId||"Trader")+" "+(rv.Delta>=0?"+":"")+rv.Delta,
+    ()=>{ r.RivalReputation.splice(i,1); renderInspector(); liveRefresh(); });
+    const bd=card.querySelector(".ic-body"); bd.append(row2(traderIdSelect(rv,"TraderId","Trader"),num(rv,"Delta","Delta","0.01")));
+    b.append(card); });
+  b.append(el("button",{class:"add-btn",text:"+ Rivalen-Reputation",onClick:()=>{ r.RivalReputation.push({TraderId:"",Delta:0}); renderInspector(); liveRefresh(); }}));
+}
+
+function buildPrereqs(q,b){ const p=q.Prerequisites;
+  b.append(el("div",{class:"eyebrow",text:"Quest-Kette"}));
+  b.append(strList(p.RequiredCompletedQuests,"Erfordert abgeschlossene Quests","quest_x"));
+  b.append(hintFor("Auch per Ziehen der Messing-Kante von Quest zu Quest setzbar."));
+  b.append(strList(p.BlockedByCompletedQuests,"Blockiert durch abgeschlossene Quests","quest_x"));
+  b.append(el("div",{class:"eyebrow",style:"margin-top:10px",text:"Anforderungen"}));
+  b.append(row2(num(p,"MinimumPlayerLevel","Min. Spielerlevel"),num(p,"RequiredTraderLevel","Min. Trader-Level")));
+  b.append(num(p,"MinimumTraderReputation","Min. Trader-Reputation","0.01"));
+  b.append(sel(p,"RequiredFaction","Erforderliche Fraktion",["",...FACTIONS]));
+  b.append(txt(p,"RequiredItem","Erforderliches Item (Klassenname)",""));
+  b.append(row2(num(p,"FromHour","Ab Stunde (-1)"),num(p,"ToHour","Bis Stunde (-1)")));
+  b.append(txt(p,"RequiredBossProgress","Erforderlicher Boss-Fortschritt",""));
+}
+
+// small building blocks
+function idField(obj,key,label,isTrader){ const f=el("div",{class:"f"}); f.append(el("label",{text:label}));
+  const i=el("input",{class:"ctrl mono",type:"text",value:obj[key]}); i.addEventListener("change",()=>{
+    const nv=i.value.trim(); if(!nv){ i.value=obj[key]; return; }
+    if(nv!==obj[key]){ if(idExists(nv,obj)){ toast("ID bereits vergeben",true); i.value=obj[key]; return; }
+      snapshot(); renameNode(obj,key,nv); } });
+  f.append(i); f.append(hintNode("Eindeutige ID = Dateiname beim Export. Umbenennen aktualisiert Verweise.")); return f; }
+function idExists(id,except){ return state.traders.some(t=>t!==except&&t.id===id)||state.quests.some(q=>q!==except&&q.QuestId===id); }
+function renameNode(obj,key,nv){ const old=obj[key];
+  if(key==="id"){ state.quests.forEach(q=>{ if(q.TraderId===old)q.TraderId=nv; (q.Objectives||[]).forEach(o=>{if(o.TraderId===old)o.TraderId=nv;});
+      (q.Rewards.RivalReputation||[]).forEach(rv=>{if(rv.TraderId===old)rv.TraderId=nv;}); }); obj.id=nv; }
+  else { state.quests.forEach(q=>{ const pr=q.Prerequisites; ["RequiredCompletedQuests","BlockedByCompletedQuests"].forEach(k=>{
+      const arr=pr[k]; const idx=arr.indexOf(old); if(idx>=0)arr[idx]=nv; }); (q.Unlocks.QuestIds||[]).forEach((v,ix,a)=>{if(v===old)a[ix]=nv;}); });
+    obj.QuestId=nv; }
+  selection={kind:obj.__k,id:nv}; renderAll(); save(); }
+
+function traderSelect(q){ const f=el("div",{class:"f"}); f.append(el("label",{text:"Trader (Questgeber)"}));
+  const s=el("select",{class:"ctrl"}); s.append(el("option",{value:"",text:"(kein Trader)"}));
+  state.traders.forEach(t=>{ const op=el("option",{value:t.id,text:t.DisplayName+"  ["+t.id+"]"}); if(q.TraderId===t.id)op.selected=true; s.append(op); });
+  s.addEventListener("change",()=>{ q.TraderId=s.value; liveRefresh(); }); f.append(s); return f; }
+function traderIdSelect(obj,key,label){ const f=el("div",{class:"f"}); f.append(el("label",{text:label}));
+  const s=el("select",{class:"ctrl"}); s.append(el("option",{value:"",text:"(kein)"}));
+  state.traders.forEach(t=>{ const op=el("option",{value:t.id,text:t.id}); if(obj[key]===t.id)op.selected=true; s.append(op); });
+  s.addEventListener("change",()=>{obj[key]=s.value;liveRefresh();}); f.append(s); return f; }
+
+function itemCard(color,name,onDel){ const c=el("div",{class:"item-card"});
+  const h=el("div",{class:"ic-head"},[el("span",{class:"ic-dot",style:`background:${color}`}),el("span",{class:"ic-name",text:name})]);
+  h.append(el("button",{class:"ic-x",text:"×",title:"entfernen",onClick:e=>{e.stopPropagation();onDel();}}));
+  c.append(h,el("div",{class:"ic-body"})); return c; }
+function row2(a,b){ const r=el("div",{class:"row2"}); r.append(a,b); return r; }
+function hintFor(t){ return el("div",{class:"f"},[el("div",{class:"hint",text:t})]); }
+function hintNode(t){ return el("div",{class:"hint",text:t}); }
+
+// validate.js
+/* =====================================================================
+   VALIDATION
+   ===================================================================== */
+function nodeIssues(id){ return validationCache.filter(v=>v.id===id); }
+function runValidation(){
+  const out=[]; const push=(sev,id,who,msg)=>out.push({sev,id,who,msg});
+  const tIds={}, qIds={};
+  state.traders.forEach(t=>{ if(!t.id) push("err",nodeId(t),"Trader","Trader-ID fehlt");
+    else { if(tIds[t.id]) push("err",t.id,t.id,"Doppelte Trader-ID"); tIds[t.id]=1; }
+    if(!(t.LoyaltyLevels||[]).length) push("warn",t.id,t.id,"Keine Loyalty-Level definiert"); });
+  state.quests.forEach(q=>{ const id=q.QuestId;
+    if(!id){ push("err","","Quest","Quest-ID fehlt"); return; }
+    if(qIds[id]) push("err",id,id,"Doppelte Quest-ID"); qIds[id]=1;
+    if(!q.Title) push("warn",id,id,"Kein Titel");
+    if(!q.TraderId) push("warn",id,id,"Kein Trader zugewiesen");
+    else if(!traderById(q.TraderId)) push("err",id,id,"Trader '"+q.TraderId+"' existiert nicht");
+    if(!(q.Objectives||[]).length) push("warn",id,id,"Keine Objectives");
+    (q.Prerequisites.RequiredCompletedQuests||[]).forEach(r=>{ if(!questById(r)) push("err",id,id,"Voraussetzung '"+r+"' existiert nicht"); });
+    if(hasCycle(id)) push("err",id,id,"Zyklische Voraussetzung");
+    (q.Objectives||[]).forEach(o=>{ const oid=o.ObjectiveId;
+      if((o.Type==="KILL"||o.Type==="BOSS")&&!o.TargetCategory&&!(o.ClassNames||[]).length&&!o.BossId)
+        push("warn",id,id,oid+": KILL ohne Filter (TargetCategory/ClassNames/BossId)");
+      if(o.Type==="HANDOVER"){ const ref=o.ReferencesObjective; const match=(q.Objectives||[]).find(x=>x.ObjectiveId===ref&&x.Type==="COLLECT");
+        if(!match) push("err",id,id,oid+": HANDOVER ohne passendes COLLECT-Objective"); }
+      if((o.RequiredZones||[]).length){ if(!o.Zone||o.RequiredZones.indexOf(o.Zone.ZoneId)<0)
+        push("warn",id,id,oid+": RequiredZones ohne passende Zone"); }
+    });
+  });
+  validationCache=out; renderValidation();
+}
+function hasCycle(startId){ const seen=new Set(); const stack=[[startId,new Set()]];
+  function dfs(id,path){ if(path.has(id))return true; path.add(id); const q=questById(id);
+    if(q){ for(const r of (q.Prerequisites.RequiredCompletedQuests||[])){ if(dfs(r,new Set(path)))return true; } } return false; }
+  return dfs(startId,new Set()); }
+function renderValidation(){ const errs=validationCache.filter(v=>v.sev==="err").length, warns=validationCache.length-errs;
+  const pill=$("#valPill"), pill2=$("#valPill2");
+  const cls=errs?"err":(warns?"warn":"ok"); const txt=validationCache.length?(errs+"E "+warns+"W"):"OK";
+  pill.className="count-pill "+cls; pill.textContent=txt; pill2.className="count-pill "+cls; pill2.textContent=txt;
+  const body=$("#valBody"); body.innerHTML="";
+  if(!validationCache.length){ body.append(el("div",{class:"vp-empty",text:"✓ Keine Probleme gefunden"})); return; }
+  validationCache.forEach(v=>{ const row=el("div",{class:"vitem "+v.sev},[
+    el("span",{class:"vmark",text:v.sev==="err"?"ERR":"WRN"}),
+    el("span",{},[document.createTextNode(v.msg),el("div",{class:"vwho",text:v.who||""})])
+  ]); row.addEventListener("click",()=>{ const n=questById(v.id)||traderById(v.id); if(n){ n.__k=n.__k||(n.QuestId?"quest":"trader"); selectNode(n); focusNode(n); } });
+  body.append(row); });
+}
+function focusNode(n){ const r=canvas.getBoundingClientRect(); view.x=r.width/2-((n._x||0)+120)*view.k; view.y=r.height/2-((n._y||0)+40)*view.k; applyView(); save(); }
+
+// io.js
+/* =====================================================================
+   IMPORT / EXPORT
+   ===================================================================== */
+function isTraderJson(o){ return o && o.TraderId!==undefined && o.DisplayName!==undefined && o.QuestId===undefined; }
+function isQuestJson(o){ return o && o.QuestId!==undefined; }
+
+function importObjects(objs){ let nt=0,nq=0,skip=0; snapshot();
+  objs.forEach(o=>{ if(isTraderJson(o)){ const t=normalizeTrader(o); const ex=traderById(t.id);
+      if(ex){ Object.assign(ex,t); } else { t._x=snap(60+nt*280); t._y=snap(0); state.traders.push(t); } nt++; }
+    else if(isQuestJson(o)){ const q=normalizeQuest(o); const ex=questById(q.QuestId);
+      if(ex){ const x=ex._x,y=ex._y; Object.assign(ex,q); ex._x=x; ex._y=y; } else { state.quests.push(q); } nq++; }
+    else skip++; });
+  // place any quests without coords
+  state.quests.forEach((q,i)=>{ if(q._x==null){ q._x=snap(60+(i%5)*280); q._y=snap(200+Math.floor(i/5)*220); } });
+  renderAll(); autoLayout(); save();
+  toast("Import: "+nt+" Trader, "+nq+" Quests"+(skip?(" ("+skip+" übersprungen)"):"")); }
+
+function normalizeTrader(o){ const t=newTraderDef(); t.Version=o.Version||1; t.id=o.TraderId||t.id;
+  t.DisplayName=o.DisplayName||""; t.Faction=o.Faction||"NEUTRAL";
+  t.LoyaltyLevels=(o.LoyaltyLevels||[]).map(l=>({Level:l.Level||0,RequiredPlayerLevel:l.RequiredPlayerLevel||0,
+    RequiredReputation:l.RequiredReputation||0,RequiredTurnover:l.RequiredTurnover||0})); t.__k="trader"; delete t.TraderId; return t; }
+function normalizeQuest(o){ const q=newQuestDef(); Object.keys(newQuestDef()).forEach(k=>{ if(o[k]!==undefined)q[k]=o[k]; });
+  q.QuestId=o.QuestId; q.Prerequisites=Object.assign(emptyPrereq(),o.Prerequisites||{});
+  q.Rewards=Object.assign(emptyReward(),o.Rewards||{}); q.Unlocks=Object.assign(emptyUnlock(),o.Unlocks||{});
+  q.Objectives=(o.Objectives||[]).map(x=>Object.assign(newObjective(x.Type||"TRAVEL"),x)); q.Choices=o.Choices||[]; q.__k="quest"; return q; }
+
+// strip editor-only fields for export
+function traderExport(t){ return {Version:t.Version||1,TraderId:t.id,DisplayName:t.DisplayName,Faction:t.Faction,
+  LoyaltyLevels:t.LoyaltyLevels}; }
+function questExport(q){ const o={Version:q.Version||1,QuestId:q.QuestId,TraderId:q.TraderId,Category:q.Category,
+  Title:q.Title,Description:q.Description,Repeatable:q.Repeatable,FailOnDeath:q.FailOnDeath,
+  FailOnFactionChange:q.FailOnFactionChange,TimeLimit:q.TimeLimit,Prerequisites:q.Prerequisites,
+  Objectives:q.Objectives.map(cleanObjective),Rewards:q.Rewards,Unlocks:q.Unlocks,Choices:q.Choices||[]};
+  return o; }
+function cleanObjective(o){ const c=clone(o); if(c.Zone&&!c.Zone.ZoneId&&!c.Zone.CenterX&&!c.Zone.CenterZ&&!c.Zone.Radius) delete c.Zone; return c; }
+
+function exportZip(){ const files=[];
+  state.traders.forEach(t=>files.push(["DME_Tasks/Traders/"+t.id+".json",JSON.stringify(traderExport(t),null,"\t")+"\n"]));
+  state.quests.forEach(q=>files.push(["DME_Tasks/Quests/"+q.QuestId+".json",JSON.stringify(questExport(q),null,"\t")+"\n"]));
+  if(!files.length){ toast("Nichts zu exportieren",true); return; }
+  const blob=makeZip(files); downloadBlob(blob,"DME_Tasks_"+ts()+".zip");
+  toast("ZIP exportiert: "+files.length+" Dateien"); }
+
+function ts(){ const d=new Date(); const p=x=>String(x).padStart(2,"0");
+  return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"_"+p(d.getHours())+p(d.getMinutes()); }
+function downloadBlob(blob,name){ const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.append(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500); }
+
+// ----- Minimal ZIP writer (STORE method, no compression) with CRC32 -----
+const CRC_TABLE=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n;
+  for(let k=0;k<8;k++) c=c&1?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; } return t; })();
+function crc32(bytes){ let c=0xFFFFFFFF; for(let i=0;i<bytes.length;i++) c=CRC_TABLE[(c^bytes[i])&0xFF]^(c>>>8);
+  return (c^0xFFFFFFFF)>>>0; }
+function makeZip(files){ const enc=new TextEncoder(); const chunks=[]; const central=[]; let offset=0;
+  const u16=v=>[v&0xFF,(v>>8)&0xFF]; const u32=v=>[v&0xFF,(v>>8)&0xFF,(v>>16)&0xFF,(v>>24)&0xFF];
+  files.forEach(([name,content])=>{ const nameB=enc.encode(name); const data=enc.encode(content);
+    const crc=crc32(data); const size=data.length;
+    const local=[].concat(u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(size),u32(size),u16(nameB.length),u16(0));
+    const lh=new Uint8Array(local.length+nameB.length+data.length); lh.set(local,0); lh.set(nameB,local.length);
+    lh.set(data,local.length+nameB.length); chunks.push(lh);
+    const cen=[].concat(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(size),u32(size),
+      u16(nameB.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset));
+    const ch=new Uint8Array(cen.length+nameB.length); ch.set(cen,0); ch.set(nameB,cen.length); central.push(ch);
+    offset+=lh.length; });
+  let cenSize=0; central.forEach(c=>cenSize+=c.length); const cenOffset=offset;
+  const end=[].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cenSize),u32(cenOffset),u16(0));
+  const parts=[...chunks,...central,new Uint8Array(end)]; return new Blob(parts,{type:"application/zip"}); }
+
+// ----- Import from files (JSON multi-select or ZIP) -----
+$("#fileInput").addEventListener("change",async e=>{ const files=[...e.target.files]; if(!files.length)return;
+  const collected=[];
+  for(const f of files){ if(f.name.toLowerCase().endsWith(".zip")){ try{ const objs=await readZip(f); collected.push(...objs); }
+      catch(err){ toast("ZIP-Fehler: "+err.message,true); } }
+    else { try{ const txt=await f.text(); const o=JSON.parse(txt); collected.push(o); }catch(err){ toast("JSON-Fehler in "+f.name,true); } } }
+  if(collected.length) importObjects(collected);
+  e.target.value=""; });
+
+async function readZip(file){ const buf=new Uint8Array(await file.arrayBuffer()); const dv=new DataView(buf.buffer);
+  // find End Of Central Directory
+  let eocd=-1; for(let i=buf.length-22;i>=0;i--){ if(dv.getUint32(i,true)===0x06054b50){ eocd=i; break; } }
+  if(eocd<0) throw new Error("kein ZIP");
+  const count=dv.getUint16(eocd+10,true); let ptr=dv.getUint32(eocd+16,true); const out=[]; const dec=new TextDecoder();
+  for(let n=0;n<count;n++){ if(dv.getUint32(ptr,true)!==0x02014b50) break;
+    const method=dv.getUint16(ptr+10,true); const compSize=dv.getUint32(ptr+20,true); const nameLen=dv.getUint16(ptr+28,true);
+    const extraLen=dv.getUint16(ptr+30,true); const commentLen=dv.getUint16(ptr+32,true); const lho=dv.getUint32(ptr+42,true);
+    const name=dec.decode(buf.subarray(ptr+46,ptr+46+nameLen));
+    // local header
+    const lNameLen=dv.getUint16(lho+26,true); const lExtra=dv.getUint16(lho+28,true);
+    const dataStart=lho+30+lNameLen+lExtra; const dataEnd=dataStart+compSize; let bytes=buf.subarray(dataStart,dataEnd);
+    let text;
+    if(method===0){ text=dec.decode(bytes); }
+    else if(method===8){ try{ const ds=new DecompressionStream("deflate-raw");
+        const stream=new Blob([bytes]).stream().pipeThrough(ds); text=await new Response(stream).text(); }
+      catch(err){ ptr+=46+nameLen+extraLen+commentLen; continue; } }
+    else { ptr+=46+nameLen+extraLen+commentLen; continue; }
+    if(name.toLowerCase().endsWith(".json")){ try{ out.push(JSON.parse(text)); }catch(e){} }
+    ptr+=46+nameLen+extraLen+commentLen; }
+  return out; }
+
+function showCode(){ const bundle={traders:state.traders.map(traderExport),quests:state.quests.map(questExport)};
+  const n=selectedNode(); let title="Bundle (alle Nodes)"; let obj=bundle;
+  if(n){ if(n.__k==="trader"){ title="Traders/"+n.id+".json"; obj=traderExport(n); } else { title="Quests/"+n.QuestId+".json"; obj=questExport(n); } }
+  $("#codeTitle").textContent=title; $("#codePre").textContent=JSON.stringify(obj,null,2); openModal("#modalCode"); }
+
+// main.js
+
+/* =====================================================================
+   ACTIONS: add / delete / duplicate / layout / fit
+   ===================================================================== */
+function centerWorldPos(){ const r=canvas.getBoundingClientRect(); return screenToWorld(r.left+r.width/2-120,r.top+r.height/3); }
+function addQuest(){ snapshot(); const q=newQuestDef(); const c=centerWorldPos(); q._x=snap(c.x); q._y=snap(c.y); q.__k="quest";
+  state.quests.push(q); renderAll(); selectNode(q); save(); toast('Quest <span class="mono">'+q.QuestId+'</span> erstellt'); }
+function addTrader(){ snapshot(); const t=newTraderDef(); const c=centerWorldPos(); t._x=snap(c.x); t._y=snap(c.y); t.__k="trader";
+  state.traders.push(t); renderAll(); selectNode(t); save(); toast('Trader <span class="mono">'+t.id+'</span> erstellt'); }
+function deleteSelection(){ const n=selectedNode(); if(!n)return; deleteNode(n); }
+function deleteNode(n){ snapshot();
+  if(n.__k==="trader"){ state.traders=state.traders.filter(x=>x!==n);
+    state.quests.forEach(q=>{ if(q.TraderId===n.id)q.TraderId=""; }); }
+  else { const qid=n.QuestId; state.quests=state.quests.filter(x=>x!==n);
+    state.quests.forEach(q=>{ const pr=q.Prerequisites; ["RequiredCompletedQuests","BlockedByCompletedQuests"].forEach(k=>{
+      pr[k]=pr[k].filter(v=>v!==qid); }); }); }
+  selection=null; renderAll(); save(); toast("Gelöscht"); }
+function duplicateSelection(){ const n=selectedNode(); if(!n)return; snapshot();
+  if(n.__k==="trader"){ const c=clone(n); delete c.__k; c.id=uid("trader_"); c.DisplayName=n.DisplayName+" (Kopie)";
+    c._x=(n._x||0)+30; c._y=(n._y||0)+30; c.__k="trader"; state.traders.push(c); renderAll(); selectNode(c); }
+  else { const c=clone(n); delete c.__k; c.QuestId=uid("quest_"); c.Title=n.Title+" (Kopie)";
+    c._x=(n._x||0)+30; c._y=(n._y||0)+30; c.__k="quest"; state.quests.push(c); renderAll(); selectNode(c); }
+  save(); toast("Dupliziert"); }
+
+function autoLayout(){ snapshot();
+  // depth = length of longest prereq chain; traders placed above their first quest column
+  const depth=new Map(); function d(qid,seen){ if(depth.has(qid))return depth.get(qid); if(seen.has(qid))return 0; seen.add(qid);
+    const q=questById(qid); if(!q){return 0;} const reqs=(q.Prerequisites.RequiredCompletedQuests||[]);
+    let m=0; reqs.forEach(r=>{ m=Math.max(m,d(r,seen)+1); }); depth.set(qid,m); return m; }
+  state.quests.forEach(q=>d(q.QuestId,new Set()));
+  const colW=300, rowH=210; const rowCount={};
+  // group quests by trader, order by depth
+  const byTrader={}; state.quests.forEach(q=>{ (byTrader[q.TraderId||"__none"]=byTrader[q.TraderId||"__none"]||[]).push(q); });
+  let traderCol=0;
+  Object.keys(byTrader).forEach(tid=>{ const list=byTrader[tid].sort((a,b)=>(depth.get(a.QuestId)||0)-(depth.get(b.QuestId)||0));
+    const t=traderById(tid); const baseX=traderCol*colW;
+    if(t){ t._x=snap(baseX); t._y=0; }
+    list.forEach((q,i)=>{ const dp=depth.get(q.QuestId)||0; q._x=snap(baseX); q._y=snap(160+dp*rowH);
+      // avoid overlap at same depth in same trader col
+      const key=tid+"_"+dp; rowCount[key]=(rowCount[key]||0); q._x=snap(baseX+rowCount[key]*270); rowCount[key]++; });
+    // width used by this trader = max lane count
+    let maxLanes=1; Object.keys(rowCount).forEach(k=>{ if(k.startsWith(tid+"_"))maxLanes=Math.max(maxLanes,rowCount[k]); });
+    traderCol += maxLanes;
+  });
+  renderAll(); fitView(); save(); toast("Auto-Layout angewendet"); }
+
+function fitView(){ const nodes=[...state.traders,...state.quests]; if(!nodes.length){ view={x:120,y:90,k:1}; applyView(); return; }
+  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+  nodes.forEach(n=>{ const w=n._w||248,h=n._h||120; minX=Math.min(minX,n._x||0); minY=Math.min(minY,n._y||0);
+    maxX=Math.max(maxX,(n._x||0)+w); maxY=Math.max(maxY,(n._y||0)+h); });
+  const r=canvas.getBoundingClientRect(); const pad=70;
+  const k=Math.min(1.2,Math.min((r.width-2*pad)/(maxX-minX),(r.height-2*pad)/(maxY-minY)));
+  view.k=Math.max(0.25,k||1); view.x=pad-minX*view.k; view.y=pad-minY*view.k; applyView(); save(); }
+
+/* =====================================================================
+   CONTEXT MENU / MODALS
+   ===================================================================== */
+function openContextMenu(x,y,n){ const m=$("#ctxmenu"); m.innerHTML="";
+  if(n){ n.__k=n.__k||(n.QuestId?"quest":"trader");
+    m.append(el("div",{class:"ctx-h",text:(n.__k==="trader"?"Trader: ":"Quest: ")+nodeId(n)}));
+    m.append(el("button",{text:"Duplizieren  (Ctrl+D)",onClick:()=>{closeContextMenu();duplicateSelection();}}));
+    m.append(el("button",{text:"JSON anzeigen",onClick:()=>{closeContextMenu();showCode();}}));
+    if(n.__k==="trader") m.append(el("button",{text:"Datei exportieren",onClick:()=>{closeContextMenu();
+      downloadBlob(new Blob([JSON.stringify(traderExport(n),null,"\t")],{type:"application/json"}),n.id+".json");}}));
+    else m.append(el("button",{text:"Datei exportieren",onClick:()=>{closeContextMenu();
+      downloadBlob(new Blob([JSON.stringify(questExport(n),null,"\t")],{type:"application/json"}),n.QuestId+".json");}}));
+    m.append(el("div",{class:"sep"}));
+    m.append(el("button",{class:"danger",text:"Löschen  (Entf)",onClick:()=>{closeContextMenu();deleteNode(n);}}));
+  } else {
+    m.append(el("div",{class:"ctx-h",text:"Neu erstellen"}));
+    m.append(el("button",{text:"+ Quest  (N)",onClick:()=>{closeContextMenu();addQuest();}}));
+    m.append(el("button",{text:"+ Trader  (T)",onClick:()=>{closeContextMenu();addTrader();}}));
+    m.append(el("div",{class:"sep"}));
+    m.append(el("button",{text:"Auto-Layout  (L)",onClick:()=>{closeContextMenu();autoLayout();}}));
+    m.append(el("button",{text:"Ansicht einpassen  (F)",onClick:()=>{closeContextMenu();fitView();}}));
+  }
+  m.style.display="block"; const r=canvas.getBoundingClientRect();
+  m.style.left=Math.min(x-r.left,r.width-190)+"px"; m.style.top=Math.min(y-r.top,r.height-260)+"px";
+}
+function closeContextMenu(){ $("#ctxmenu").style.display="none"; }
+canvas.addEventListener("pointerdown",()=>closeContextMenu());
+
+function openModal(sel){ $(sel).classList.add("show"); }
+function closeModals(){ document.querySelectorAll(".modal-bg").forEach(m=>m.classList.remove("show")); }
+document.querySelectorAll("[data-close]").forEach(b=>b.addEventListener("click",closeModals));
+document.querySelectorAll(".modal-bg").forEach(m=>m.addEventListener("pointerdown",e=>{ if(e.target===m)closeModals(); }));
+$("#modalCode").querySelector("[data-copy]").addEventListener("click",()=>{ const t=$("#codePre").textContent;
+  navigator.clipboard.writeText(t).then(()=>toast("JSON kopiert")); });
+
+/* =====================================================================
+   TOOLBAR WIRING
+   ===================================================================== */
+$("#btnNewQuest").onclick=addQuest;
+$("#btnNewTrader").onclick=addTrader;
+$("#btnUndo").onclick=undo; $("#btnRedo").onclick=redo;
+$("#btnLayout").onclick=autoLayout; $("#btnFit").onclick=fitView;
+$("#btnImport").onclick=()=>$("#fileInput").click();
+$("#btnExport").onclick=exportZip;
+$("#btnCode").onclick=showCode;
+$("#btnHelp").onclick=()=>openModal("#modalHelp");
+$("#btnValidate").onclick=()=>{ const p=$("#valpanel"); p.classList.toggle("hidden"); };
+$("#valHead").onclick=()=>$("#valpanel").classList.add("hidden");
+$("#insp-close").onclick=()=>selectNode(null);
+$("#btnClear").onclick=()=>{ if(confirm("Alle Trader und Quests löschen? (nur diese Session, Export vorher!)")){ snapshot();
+  state={traders:[],quests:[]}; selection=null; renderAll(); save(); toast("Session geleert"); } };
+
+// help content
+(function(){ const kb=[["N","Neue Quest"],["T","Neuer Trader"],["F","Ansicht einpassen"],["L","Auto-Layout"],
+  ["Space + Ziehen","Leinwand verschieben"],["Mausrad","Zoom"],["Ctrl+Z / Ctrl+Y","Rückgängig / Wiederholen"],
+  ["Ctrl+D","Duplizieren"],["Entf","Auswahl löschen"],["Rechtsklick","Kontextmenü"],["?","Diese Hilfe"]];
+  const g=$("#kbGrid"); kb.forEach(([k,d])=>{ g.append(el("span",{class:"k",text:k}),el("span",{class:"d",text:d})); }); })();
+(function(){ const lg=$("#legend"); OBJ_TYPES.forEach(t=>lg.append(
+  el("span",{class:"lg"},[el("i",{style:`background:${OBJ_COLOR[t]}`}),document.createTextNode(t)]))); })();
+
+/* =====================================================================
+   SEED (first run) + INIT
+   ===================================================================== */
+function seedDemo(){
+  const t1=newTraderDef(); t1.id="west_quartermaster"; t1.DisplayName="Quartiermeister Rask"; t1.Faction="WEST";
+  t1.LoyaltyLevels=[{Level:1,RequiredPlayerLevel:0,RequiredReputation:0,RequiredTurnover:0},{Level:2,RequiredPlayerLevel:10,RequiredReputation:0.2,RequiredTurnover:250000}];
+  t1.__k="trader"; t1._x=0; t1._y=0;
+  const t2=newTraderDef(); t2.id="hacker_dima"; t2.DisplayName="Dima der Hacker"; t2.Faction="NEUTRAL";
+  t2.__k="trader"; t2._x=320; t2._y=0;
+  const q1=newQuestDef(); q1.QuestId="west_001"; q1.TraderId="west_quartermaster"; q1.Category="STORY";
+  q1.Title="Willkommen im Feld"; q1.Description="Erkunde das alte Militärlager im Westen.";
+  q1.Objectives=[Object.assign(newObjective("DISCOVER"),{ObjectiveId:"discover_camp",Zone:{ZoneId:"mil_camp_west",CenterX:2035,CenterY:290,CenterZ:7295,Radius:150,Height:120}})];
+  q1.Rewards.PlayerExperience=1500; q1.Rewards.Currency=5000; q1.Rewards.TraderReputation=0.02; q1.__k="quest"; q1._x=0; q1._y=170;
+  const q2=newQuestDef(); q2.QuestId="west_002"; q2.TraderId="west_quartermaster"; q2.Category="STORY";
+  q2.Title="Säubere das Lager"; q2.Description="Erledige die Infizierten in der Zone.";
+  q2.Prerequisites.RequiredCompletedQuests=["west_001"];
+  q2.Objectives=[Object.assign(newObjective("KILL"),{ObjectiveId:"kill_infected",Amount:5,TargetCategory:"INFECTED"})];
+  q2.Rewards.PlayerExperience=2500; q2.Rewards.Currency=7500; q2.__k="quest"; q2._x=0; q2._y=380;
+  const q3=newQuestDef(); q3.QuestId="west_003"; q3.TraderId="west_quartermaster"; q3.Category="STORY";
+  q3.Title="Melde dich zurück"; q3.Prerequisites.RequiredCompletedQuests=["west_002"];
+  q3.Objectives=[Object.assign(newObjective("RETURN_TO_TRADER"),{ObjectiveId:"report",TraderId:"west_quartermaster",MustBeAlive:true})];
+  q3.Rewards.PlayerExperience=4000; q3.Rewards.Currency=12000; q3.__k="quest"; q3._x=0; q3._y=590;
+  state.traders=[t1,t2]; state.quests=[q1,q2,q3];
+}
+
+function init(){ if(!load()){ seedDemo(); } renderAll(); applyView();
+  // welcome
+  setTimeout(()=>{ if(!localStorage.getItem(STORE_KEY+"_seen")){ toast('Willkommen im <span class="mono">DME Quest Editor</span> — <b>?</b> für Hilfe'); localStorage.setItem(STORE_KEY+"_seen","1"); } },400);
+}
+init();
+</script>
+</body>
+</html>

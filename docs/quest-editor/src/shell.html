@@ -1,0 +1,81 @@
+<div id="app">
+  <header id="toolbar">
+    <div id="brand"><div class="logo">Q</div><div class="title">DME&nbsp;<b>QUEST</b>&nbsp;EDITOR</div></div>
+    <div class="tb-sep"></div>
+    <button class="tb-btn primary" id="btnNewQuest">+ Quest <span class="k">N</span></button>
+    <button class="tb-btn" id="btnNewTrader">+ Trader <span class="k">T</span></button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="btnUndo" title="Rückgängig (Ctrl+Z)">↶</button>
+    <button class="tb-btn" id="btnRedo" title="Wiederholen (Ctrl+Y)">↷</button>
+    <button class="tb-btn" id="btnLayout" title="Auto-Layout (L)">Layout</button>
+    <button class="tb-btn" id="btnFit" title="Ansicht einpassen (F)">Fit</button>
+    <div class="tb-spacer"></div>
+    <button class="tb-btn" id="btnImport">Import</button>
+    <button class="tb-btn" id="btnCode">&lt;/&gt; JSON</button>
+    <button class="tb-btn primary" id="btnExport">Export ZIP</button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="btnValidate" title="Validierung">Prüfen <span class="count-pill ok" id="valPill">0</span></button>
+    <button class="tb-btn" id="btnHelp" title="Hilfe (?)">?</button>
+    <button class="tb-btn danger" id="btnClear" title="Alles löschen">Clear</button>
+    <span id="zoomLabel">100%</span>
+  </header>
+
+  <div id="stage">
+    <div id="canvas">
+      <div id="world">
+        <svg id="edges"></svg>
+      </div>
+    </div>
+
+    <aside id="inspector">
+      <div id="insp-head" class="hidden">
+        <div>
+          <div class="h-tag" id="ih-tag">QUEST</div>
+          <div class="h-title" id="ih-title">—</div>
+          <div class="h-sub" id="ih-sub"></div>
+        </div>
+        <button id="insp-close" title="Auswahl aufheben">×</button>
+      </div>
+      <div id="insp-body">
+        <div id="insp-empty">
+          <div class="big">Kein Node ausgewählt</div>
+          <div style="line-height:1.6">Wähle eine Quest oder einen Trader,<br>oder erstelle mit <b>N</b>/<b>T</b> einen neuen.<br><br>
+          Ziehen vom <span style="color:#4A90D9">blauen Port</span> = Trader bietet Quest an.<br>
+          Ziehen vom <span style="color:var(--brass)">Messing-Port</span> = Quest-Voraussetzung.</div>
+        </div>
+      </div>
+    </aside>
+
+    <div id="valpanel" class="hidden">
+      <div class="vp-head" id="valHead"><span class="s-name">Validierung</span><span class="count-pill ok" id="valPill2">0</span><span style="color:var(--faint)">×</span></div>
+      <div class="vp-body" id="valBody"></div>
+    </div>
+
+    <div id="ctxmenu"></div>
+    <div id="toast"></div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-bg" id="modalHelp">
+  <div class="modal">
+    <div class="m-head"><h2>Hilfe &amp; Tastenkürzel</h2><button data-close>×</button></div>
+    <div class="m-body">
+      <p class="lead">Visueller Node-Editor für <b>DME_Tasks</b>-Quests. Trader bieten Quests an (blaue Kante);
+      Quests verketten sich über Voraussetzungen (Messing-Kante von unten). Der Export erzeugt die
+      Serverprofil-Struktur <span class="mono">DME_Tasks/Traders/*.json</span> + <span class="mono">Quests/*.json</span>.</p>
+      <div class="kb-grid" id="kbGrid"></div>
+      <div style="margin-top:16px" class="eyebrow">Objective-Typen</div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalCode">
+  <div class="modal">
+    <div class="m-head"><h2 id="codeTitle">JSON</h2><div style="display:flex;gap:8px"><button class="mini-btn" data-copy>Kopieren</button><button data-close>×</button></div></div>
+    <div class="m-body"><pre id="codePre"></pre></div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".json,.zip" multiple class="hidden">
