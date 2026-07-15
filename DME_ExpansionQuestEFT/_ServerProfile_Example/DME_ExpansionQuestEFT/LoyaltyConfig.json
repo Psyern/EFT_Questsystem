@@ -1,0 +1,46 @@
+{
+    "Version": 1,
+    "Traders": [
+        {
+            "NpcId": -1,
+            "Faction": "",
+            "Tiers": [
+                {
+                    "Tier": 1,
+                    "DisplayName": "Rekrut",
+                    "RequiredReputation": 0,
+                    "RequiredCompletedQuestIDs": [],
+                    "UnlockedMarketCategories": [],
+                    "UnlockedMarketClassNames": []
+                },
+                {
+                    "Tier": 2,
+                    "DisplayName": "Soldat",
+                    "RequiredReputation": 500,
+                    "RequiredCompletedQuestIDs": [],
+                    "UnlockedMarketCategories": ["weapons_assault_rifles"],
+                    "UnlockedMarketClassNames": []
+                },
+                {
+                    "Tier": 3,
+                    "DisplayName": "Veteran",
+                    "RequiredReputation": 2000,
+                    "RequiredCompletedQuestIDs": [],
+                    "UnlockedMarketCategories": ["weapons_sniper_rifles"],
+                    "UnlockedMarketClassNames": ["M79"]
+                }
+            ]
+        }
+    ],
+    "QuestMinTiers": {},
+    "TerjeQuestRewards": [
+        { "QuestId": 1, "SkillId": "athl", "Xp": 50 }
+    ],
+    "TerjeQuestRequirements": [
+        { "QuestId": 2, "SkillId": "athl", "MinLevel": 2 }
+    ],
+    "EnableQuestTierGate": true,
+    "EnableMarketUnlocks": true,
+    "EnableTerjeIntegration": true,
+    "HideLockedMarketItems": false
+}
